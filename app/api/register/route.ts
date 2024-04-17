@@ -13,6 +13,8 @@ const schema = z.object({
     })
     .min(6)
     .max(20),
+  firstName: z.string({ required_error: "Name is required" }).max(30),
+  lastName: z.string({ required_error: "Lastname is required" }).max(30),
 });
 
 export async function POST(request: NextRequest) {
@@ -33,8 +35,14 @@ export async function POST(request: NextRequest) {
     data: {
       email: body.email,
       hashedPassword,
+      firstName: body.firstName,
+      lastName: body.lastName,
     },
   });
 
-  return NextResponse.json({ email: newUser.email });
+  return NextResponse.json({
+    email: newUser.email,
+    firstName: newUser.firstName,
+    lastName: newUser.lastName,
+  });
 }

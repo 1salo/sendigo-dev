@@ -7,6 +7,10 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/sign-in",
+  },
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -30,15 +34,32 @@ export const authOptions: NextAuthOptions = {
 
         const passwordsMatch = await bcrypt.compare(
           credentials.password,
-          user.hashedPassword!,
+          user.hashedPassword!
         );
-
-        return passwordsMatch ? user : null;
+        if (passwordsMatch) {
+          return {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+          };
+        } else {
+          return null;
+        }
       },
     }),
   ],
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    redirect({ url, baseUrl }) {
+      // After sign out redirect to home
+      if (url.startsWith(baseUrl + "/api/auth/signout")) {
+        return baseUrl; // redirect to the base URL which is typically the homepage
+      }
+      // Default behavior
+      return baseUrl;
+    },
   },
 };
 
