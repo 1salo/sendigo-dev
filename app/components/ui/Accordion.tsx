@@ -1,0 +1,77 @@
+import React, { FunctionComponent, useState } from "react";
+import { IoCloseOutline } from "react-icons/io5";
+import { HiOutlinePlus } from "react-icons/hi";
+
+interface AccordionProps {
+  title: string;
+  content: string;
+  isOpen: boolean;
+  onClick: () => void;
+}
+
+const Accordion: FunctionComponent<AccordionProps> = ({
+  title,
+  content,
+  isOpen,
+  onClick,
+}) => {
+  const [isRotating, setIsRotating] = useState(false);
+  const [closeIconRotating, setCloseIconRotating] = useState(false); // Additional state for close icon rotation
+
+  const handleToggle = () => {
+    if (!isOpen) {
+      // Start rotating if we are opening the accordion
+      setIsRotating(true);
+      setTimeout(() => {
+        onClick(); // Change the state to open after rotation completes
+        setIsRotating(false); // Reset rotation state after it completes
+      }, 800); // This matches the duration of the rotation
+    } else {
+      // Start rotation for closing
+      setCloseIconRotating(true);
+      setTimeout(() => {
+        onClick(); // Close the accordion after the rotation
+        setCloseIconRotating(false); // Reset rotation state
+      }, 800); // Rotation duration for closing
+    }
+  };
+
+  return (
+    <div className="border-b border-gray-200 w-full">
+      <button
+        className="flex justify-between items-center w-full py-8 px-6 focus:outline-none"
+        onClick={handleToggle}
+      >
+        <span className="font-medium text-2xl">{title}</span>
+        {isOpen ? (
+          <IoCloseOutline
+            className={`text-2xl transition-transform duration-1000 ease-in-out ${
+              closeIconRotating ? "rotate-[-45deg]" : ""
+            }`}
+          />
+        ) : (
+          <HiOutlinePlus
+            className={`text-2xl transition-transform duration-1000 ease-in-out ${
+              isRotating ? "rotate-45" : ""
+            }`}
+          />
+        )}
+      </button>
+      <div
+        className={`transition-all duration-700 ease-in-out ${
+          isOpen ? "max-h-[2000px]" : "max-h-0"
+        } overflow-hidden`}
+      >
+        <div
+          className={`transition-opacity duration-700 ease-linear ${
+            isOpen ? "opacity-100" : "opacity-0"
+          } px-6 py-8`}
+        >
+          {content}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Accordion;

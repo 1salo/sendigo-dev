@@ -4,15 +4,14 @@ import { NextResponse } from "next/server";
 import * as z from "zod";
 
 // Define schema for input validation
-
 const userSchema = z.object({
-  firstName: z.string().min(1, "Firstname is required").max(100),
-  lastName: z.string().min(1, "Lastname is required").max(100),
-  email: z.string().min(1, "Email is required").email("Invalid email"),
+  // firstName: z.string().min(1, "Förnamn krävs").max(100),
+  // lastName: z.string().min(1, "Efternamn krävs").max(100),
+  email: z.string().min(1, "Email krävs").email("Felaktig email"),
   password: z
     .string()
-    .min(1, "Password is required")
-    .min(8, "Password must have than 8 characters"),
+    .min(1, "Lösenord krävs")
+    .min(8, "Lösenordet måste bestå av minst än 8 tecken"),
 });
 
 const prisma = new PrismaClient();
@@ -20,24 +19,22 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, firstName, lastName, password } = userSchema.parse(body);
+    const { email, password } = userSchema.parse(body);
 
     const existingUserByEmail = await prisma.user.findUnique({
       where: { email: email },
     });
     if (existingUserByEmail) {
       return NextResponse.json(
-        { user: null, message: "User with this email already exist" },
+        { user: null, message: "Användare med denna mail finns redan" },
         { status: 409 }
       );
     }
 
     const hashedPassword = await hash(password, 10);
-    
+
     const newUser = await prisma.user.create({
       data: {
-        firstName,
-        lastName,
         email,
         hashedPassword,
       },
@@ -45,7 +42,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
-        user: newUser,
+        email: newUser.email,
         message: "User created succesfully",
       },
       { status: 201 }

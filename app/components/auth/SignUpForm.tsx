@@ -18,8 +18,6 @@ import { useRouter } from "next/navigation";
 
 const FormSchema = z
   .object({
-    firstname: z.string().min(1, "Firstname is required").max(100),
-    lastname: z.string().min(1, "Lastname is required").max(100),
     email: z.string().min(1, "Email is required").email("Invalid email"),
     password: z
       .string()
@@ -37,8 +35,6 @@ const SignUpForm = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      firstname: "",
-      lastname: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -52,16 +48,23 @@ const SignUpForm = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstName: values.firstname,
-        lastName: values.lastname,
         email: values.email,
         password: values.password,
       }),
     });
+
     if (response.ok) {
       router.push("/sign-in");
+    } else if (response.status === 409) {
+      const errorData = await response.json();
+      form.setError("email", {
+        type: "manual",
+        message: errorData.message,
+      });
     } else {
       console.error("Registration failed");
+      const errorData = await response.json();
+      alert(errorData.message);
     }
   };
 
@@ -76,44 +79,10 @@ const SignUpForm = () => {
             <div className="space-y-2">
               <FormField
                 control={form.control}
-                name="firstname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Förnamn</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="John"
-                        autoComplete="name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Efternamn</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Smith"
-                        autoComplete="family-name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Företagsmail</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="mail@example.com"
@@ -121,7 +90,9 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500">
+                      {form.formState.errors.email?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -130,16 +101,15 @@ const SignUpForm = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Skriv ett lösenord</FormLabel>
+                    <FormLabel>Lösenord</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Lösenord"
                         autoComplete="current-password"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500"/>
                   </FormItem>
                 )}
               />
@@ -148,16 +118,15 @@ const SignUpForm = () => {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ange ditt lösenord igen</FormLabel>
+                    <FormLabel>Lösenord igen</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Lösenord igen"
                         type="password"
                         autoComplete="current-password"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500"/>
                   </FormItem>
                 )}
               />

@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-color: #E3D5CA;
+  --background-color: #e3d5ca;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,13 +24,42 @@ body {
 }
 
 .sendigo-main-color {
-  background-color: #E3D5CA;
+  background-color: #e3d5ca;
 }
 
 .sendigo-sec-color {
-  background-color: #FFB3C7;
+  background-color: #ffb3c7;
 }
 
 .sendigo-three-color {
-  background-color: #D5BDAF;
+  background-color: #d5bdaf;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(1px);
+  }
+}
+
+.shake:hover {
+  animation: shake 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.rotate-hover:hover {
+  transform: rotate(15deg);
+  transition: transform 0.3s ease-in-out;
 }
