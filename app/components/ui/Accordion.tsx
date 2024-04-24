@@ -16,11 +16,10 @@ const Accordion: FunctionComponent<AccordionProps> = ({
   onClick,
 }) => {
   const [isRotating, setIsRotating] = useState(false);
-  const [closeIconRotating, setCloseIconRotating] = useState(false); // Additional state for close icon rotation
+  const [closeIconRotating, setCloseIconRotating] = useState(false);
 
   const handleToggle = () => {
     if (!isOpen) {
-      // Start rotating if we are opening the accordion
       setIsRotating(true);
       setTimeout(() => {
         onClick(); // Change the state to open after rotation completes
@@ -37,7 +36,7 @@ const Accordion: FunctionComponent<AccordionProps> = ({
   };
 
   return (
-    <div className="border-b border-gray-200 w-full">
+    <div className="border-b border-black w-full">
       <button
         className="flex justify-between items-center w-full py-8 px-6 focus:outline-none"
         onClick={handleToggle}

@@ -24,12 +24,12 @@ const DashboardNavBar = () => {
       : "/images/default-profilepic.jpeg";
 
   return (
-    <div className="navbar sendigo-three-color">
+    <div className="navbar divide-x-2 border-b-2 h-16 z-50">
       <div className="flex-1 flex items-center">
-        <Link href="/" className="flex items-center ml-5">
+        <Link href="/dashboard" className="flex items-center ml-5">
           <Logo />
         </Link>
-        <ul className="menu menu-horizontal p-0">
+        <ul className="menu menu-horizontal ml-5">
           <li>
             <Link
               href="/dashboard"
@@ -47,8 +47,8 @@ const DashboardNavBar = () => {
               href="/newshipment"
               className={
                 currentPath === "/newshipment"
-                  ? "border-b-2 border-black p-2"
-                  : "p-2"
+                  ? "border-b-2 border-black p-2 ml-2"
+                  : "p-2 ml-2"
               }
             >
               Ny sändning
@@ -59,8 +59,8 @@ const DashboardNavBar = () => {
               href="/orders"
               className={
                 currentPath === "/orders"
-                  ? "border-b-2 border-black p-2"
-                  : "p-2"
+                  ? "border-b-2 border-black p-2 ml-2"
+                  : "p-2 ml-2"
               }
             >
               Sändningar
@@ -70,9 +70,9 @@ const DashboardNavBar = () => {
       </div>
       <div className="flex-none">
         <div className="dropdown dropdown-end">
-          <label tabIndex={0} className="btn btn-ghost btn-circle rotate-hover">
+          <label tabIndex={0} className="btn btn-ghost">
             <div className="indicator">
-              <TbTrolley className="h-5 w-5" />
+              <TbTrolley className="h-5 w-5 rotate-hover" />
             </div>
           </label>
           <div
@@ -80,14 +80,22 @@ const DashboardNavBar = () => {
             className="mt-3 card card-compact dropdown-content w-52 bg-base-100 shadow"
           >
             <div className="card-body">
-              <button className="btn btn-primary btn-block">View cart</button>
+              <button className="btn btn-primary btn-block">
+                Visa kundkorg
+              </button>
             </div>
           </div>
         </div>
-        <Link href="/contacts">
-          <button className="btn btn-ghost btn-circle flex items-center justify-center text-2xl shake">
-            <RiContactsBook3Fill />
-          </button>
+        <Link
+          href="/contacts"
+          className={
+            currentPath === "/contacts"
+              ? "border-b-black border-b-2 btn btn-ghost flex items-center justify-center text-2xl mr-2"
+              : "btn btn-ghost flex items-center justify-center text-2xl mr-2"
+          }
+          // className="btn btn-ghost flex items-center justify-center text-2xl mr-2"
+        >
+          <RiContactsBook3Fill className="shake" />
         </Link>
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
@@ -105,14 +113,11 @@ const DashboardNavBar = () => {
             className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <Link href="/profile">Profile</Link>
-            </li>
-            <li>
-              <Link href="/settings">Settings</Link>
+              <Link href="/profile">Mina sidor</Link>
             </li>
             <li>
               <Link href="/" onClick={handleSignOut}>
-                Logout
+                Logga ut
               </Link>
             </li>
           </ul>

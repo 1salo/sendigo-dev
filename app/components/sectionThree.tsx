@@ -7,17 +7,17 @@ const faqs = [
   {
     question: "Vad kostar det att boka frakt med Sendigo?",
     answer:
-      "Med Sendigo bokar företag med upp till 85 % rabatterade fraktpriser både inom Sverige och utrikes. Alla spårbara tillägg ingår i fraktpriset du ser när du bokar, så att du slipper otrevliga överraskningar på fakturan.",
+      "Sendigo erbjuder företag möjligheten att boka frakt med rabatter upp till 85 %, såväl inrikes som till och från utlandet. Det pris du ser vid bokning inkluderar alla spårbara tillägg, vilket säkerställer att det inte dyker upp några oväntade kostnader på er faktura.",
   },
   {
     question: "Vilka transportörer kan jag frakta med i Sendigo?",
     answer:
-      "I Sendigo kan du boka billig frakt med DHL, TNT, FedEx, UPS och DSV – i ett och samma bokningssystem! Du får direkt tillgång billiga fraktpriser och behöver inte lägga tid på att förhandla fraktavtal.",
+      "Sendigo ger dig tillgång till ett enkelt bokningssystem där du kan arrangera prisvärda transporter med välkända fraktbolag som DHL, TNT, FedEx, UPS och DSV. Njut av direkt tillgång till förmånliga fraktpriser utan tidskrävande förhandlingar om fraktavtal.",
   },
   {
     question: "Vem kan frakta med Sendigo?",
     answer:
-      "Sendigo är till för företag som vill frakta billigt och smart. Kom ihåg att mottagaren kan vara både privatperson och företag, men att du inte kan frakta med Sendigo som privatperson.",
+      "Sendigo är utformat för företag som önskar en kostnadseffektiv och smart fraktlösning. Tänk på att även om både privatpersoner och företag kan vara mottagare, kan endast företag använda Sendigos tjänster för att skicka paket. Privatpersoner kan inte frakta genom Sendigo.",
   },
 ];
 
@@ -29,9 +29,9 @@ const Faq = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-6xl font-normal mb-8">Vanliga frågor</h1>
-      <div className="flex flex-col gap-8">
+    <div className="container mx-auto pb-32 pt-8">
+      <h1 className="text-6xl font-normal mb-8 mt-8">Vanliga frågor</h1>
+      <div className="flex flex-col gap-10">
         {faqs.map((item, index) => (
           <Accordion
             key={index}

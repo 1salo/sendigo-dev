@@ -35,7 +35,8 @@ export interface CurrentUserProps {
 
 // New MyUser interface
 export interface MyUser {
-  id: string; // Assuming ID is always a string
+  id: string;
+  companyName: string | null;
   name: string;
   email: string | null;
   image: string | null;

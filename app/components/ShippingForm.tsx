@@ -1,7 +1,9 @@
 "use client";
 
-import { useForm, SubmitHandler } from "react-hook-form";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import Link from "next/link";
 
 interface IFormInput {
   fromCountry: string;
@@ -11,94 +13,76 @@ interface IFormInput {
 }
 
 const ShippingForm: React.FC = () => {
-  const { register, handleSubmit } = useForm<IFormInput>();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data);
-    // Här kan du hantera inskick av formuläret, till exempel API-anrop
+  const handleButtonClick = async () => {
+    setIsLoading(true);
   };
 
   return (
-    <div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid lg:grid-cols-5 lg:gap-x-6"
-      >
+    <form className="flex flex-wrap gap-4 items-center justify-center">
+      <div className="flex flex-col md:mb-0">
+        <span className="label-text mb-2">Från land</span>
+        <span className="{`se`}" />
+        <input
+          type="text"
+          placeholder="Land"
+          className="input input-bordered w-full max-w-xs"
+        />
+      </div>
+
+      <div className="flex flex-col md:mb-0">
+        <span className="label-text mb-2">Till land</span>
+        <input
+          type="text"
+          placeholder="Land"
+          className="input input-bordered w-full max-w-xs"
+        />
+      </div>
+
+      <div className="flex flex-col md:mb-0">
+        <span className="label-text mb-2">Välj godstyp</span>
         <div>
-          <label
-            htmlFor="fromCountry"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Från land
-          </label>
-          <select
-            {...register("fromCountry")}
-            id="fromCountry"
-            name="fromCountry"
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          >
-            {/* Options for fromCountry */}
+          <select className="select select-bordered">
+            <option disabled selected>
+              Välj godstyp
+            </option>
+            <option>Paket</option>
+            <option>Pall</option>
+            <option>Ospecificerat</option>
           </select>
         </div>
+      </div>
 
-        <div>
-          <label
-            htmlFor="toCountry"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Till land
-          </label>
-          <select
-            {...register("toCountry")}
-            id="toCountry"
-            name="toCountry"
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          >
-            {/* Options for toCountry */}
-          </select>
+      <div className="flex flex-col md:mb-0 relative">
+        <span className="label-text mb-2">Till land</span>
+        <input
+          type="text"
+          placeholder="Land"
+          className="input input-bordered w-full max-w-xs"
+        />
+        <div className="absolute inset-y-0 right-0 pr-3 pt-8 flex items-center pointer-events-none">
+          <span>kg</span>
         </div>
+      </div>
 
-        <div>
-          <label
-            htmlFor="goodsType"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Välj godstyp
-          </label>
-          <select
-            {...register("goodsType")}
-            id="goodsType"
-            name="goodsType"
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          >
-            {/* Options for goodsType */}
-          </select>
-        </div>
-
-        <div>
-          <label
-            htmlFor="weight"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Vikt
-          </label>
-          <input
-            {...register("weight")}
-            id="weight"
-            name="weight"
-            type="number"
-            placeholder="KG"
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        <div className="flex justify-end items-center">
-          <button type="submit" className="btn btn-primary">
-            Beräkna pris
-          </button>
-        </div>
-      </form>
-    </div>
+      <div className="mt-6">
+        <Link
+          onClick={handleButtonClick}
+          className={`btn btn-outline ${isLoading ? "w-32 disabled:" : ""}`}
+          type="submit"
+          href="/sign-up"
+        >
+          {isLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="loading loading-spinner loading-lg"></span>
+            </div>
+          ) : (
+            "Beräkna pris"
+          )}
+        </Link>
+      </div>
+    </form>
   );
 };
 

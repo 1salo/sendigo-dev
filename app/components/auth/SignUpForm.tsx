@@ -15,6 +15,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const FormSchema = z
   .object({
@@ -41,7 +42,10 @@ const SignUpForm = () => {
     },
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    setIsLoading(true);
     const response = await fetch("/api/user", {
       method: "POST",
       headers: {
@@ -56,12 +60,14 @@ const SignUpForm = () => {
     if (response.ok) {
       router.push("/sign-in");
     } else if (response.status === 409) {
+      setIsLoading(false);
       const errorData = await response.json();
       form.setError("email", {
         type: "manual",
         message: errorData.message,
       });
     } else {
+      setIsLoading(false);
       console.error("Registration failed");
       const errorData = await response.json();
       alert(errorData.message);
@@ -109,7 +115,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500"/>
+                    <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
@@ -126,16 +132,25 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500"/>
+                    <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
             </div>
             <Button
-              className="w-full mt-6 btn btn-primary rounded-full"
+              className={`w-72 mx-auto block px-10 py-2 text-sm btn btn-primary rounded-full transition-transform duration-300 mt-4 ${
+                isLoading ? "relative" : ""
+              }`}
               type="submit"
+              disabled={isLoading}
             >
-              Skapa konto
+              {isLoading ? (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </div>
+              ) : (
+                "Skapa konto"
+              )}
             </Button>
           </form>
           <div className="my-4 flex items-center justify-center">
