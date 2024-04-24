@@ -6,19 +6,21 @@ import PriceCalculator from "./components/priceCalc";
 import MainLayout from "./layouts/MainLayout/MainLayout";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "./api/auth/[...nextauth]/authOptions";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
 
   return (
-    <MainLayout>
-      <NavBar />
-      <SectionOne />
-      <PriceCalculator />
-      <SectionTwo />
-      <SectionThree />
-      <Footer />
-    </MainLayout>
+    <>
+      <MainLayout>
+        <NavBar />
+        <SectionOne />
+        <PriceCalculator />
+        <SectionTwo />
+        <SectionThree />
+        <Footer />
+      </MainLayout>
+    </>
   );
 }

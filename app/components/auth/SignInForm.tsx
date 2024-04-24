@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import {
   Form,
   FormControl,
@@ -18,11 +19,11 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email"),
+  email: z.string().min(1, "Mail krävs").email("Ogiltlig mail"),
   password: z
     .string()
-    .min(1, "Password is required")
-    .min(8, "Password must have than 8 characters"),
+    .min(1, "Lösenord krävs")
+    .min(8, "Lösenordet måste bestå av mer än 8 tecken"),
 });
 
 const SignInForm = () => {
@@ -35,16 +36,19 @@ const SignInForm = () => {
     },
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    setIsLoading(true);
     const signInData = await signIn("credentials", {
       email: values.email,
       password: values.password,
       redirect: false,
     });
     if (signInData?.error) {
+      setIsLoading(false);
       console.log(signInData.error);
     } else {
-      router.refresh();
       router.push("/dashboard");
     }
   };
@@ -96,10 +100,19 @@ const SignInForm = () => {
               />
             </div>
             <Button
-              className="w-72 mx-auto block px-10 py-2 text-sm btn btn-primary rounded-full transition-transform duration-300 hover:scale-105 mt-6"
+              className={`w-72 mx-auto block px-10 py-2 text-sm btn btn-primary rounded-full transition-transform duration-300 mt-4 ${
+                isLoading ? "relative" : ""
+              }`}
               type="submit"
+              disabled={isLoading}
             >
-              Logga in
+              {isLoading ? (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </div>
+              ) : (
+                "Logga in"
+              )}
             </Button>
           </form>
           <div className="my-4 flex w-full items-center justify-center before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400">

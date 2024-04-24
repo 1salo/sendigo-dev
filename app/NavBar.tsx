@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Logo from "./components/ui/Logo";
 
-
 const NavBar = () => {
   const { status, data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -26,10 +25,6 @@ const NavBar = () => {
     window.location.href = "/";
   };
 
-  if (status === "loading") {
-    return <p>Loading...</p>; // Display a loading indicator or message
-  }
-
   const userProfileImage =
     session?.user?.image?.startsWith("http://") ||
     session?.user?.image?.startsWith("https://")
@@ -38,8 +33,10 @@ const NavBar = () => {
 
   return (
     <div
-      className={`fixed navbar transition-all duration-200 ${
-        isScrolled ? "bg-white bg-opacity-80 backdrop-blur" : "bg-transparent"
+      className={`fixed navbar transition-all duration-200 z-50 ${
+        isScrolled
+          ? "bg-white bg-opacity-80 backdrop-blur h-24 z-50"
+          : "bg-transparent h-24 z-50"
       }`}
     >
       <div className="flex-1 flex items-center">
@@ -61,7 +58,10 @@ const NavBar = () => {
 
       {status === "unauthenticated" ? (
         <div className="flex items-center space-x-4">
-          <Link href="/sign-up" className="btn btn-primary rounded-full">
+          <Link
+            href="/sign-up"
+            className="btn btn-primary rounded-full transition-transform duration-300 hover:scale-105"
+          >
             Kom igång
           </Link>
           <Link href="/sign-in" className="btn btn-outline rounded-full">
@@ -71,7 +71,7 @@ const NavBar = () => {
       ) : (
         <div className="relative flex items-center space-x-4">
           <div>
-            <p>{session?.user?.firstName}</p>
+            <p>{session?.user?.companyName}</p>
           </div>
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
