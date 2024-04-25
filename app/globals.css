@@ -24,15 +24,19 @@ body {
 }
 
 .sendigo-main-color {
-  background-color: #e3d5ca;
+  background-color: #EDDCD2;
 }
 
 .sendigo-sec-color {
-  background-color: #ffb3c7;
+  background-color: #FFF1E6;
 }
 
 .sendigo-three-color {
   background-color: #d5bdaf;
+}
+
+.sendigo-four-color {
+  background-color: #fff8d6;
 }
 
 @keyframes shake {

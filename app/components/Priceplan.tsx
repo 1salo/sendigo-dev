@@ -16,7 +16,7 @@ const Priceplan = () => {
         "Support via telefon, chatt & mail",
       ],
       buttonLabel: "Kom igång",
-      // Define the actual button click handler function here
+      buttonLink: "/sign-up",
       onButtonClick: () => console.log("Free Plan selected"),
     },
     {
@@ -27,7 +27,8 @@ const Priceplan = () => {
         "Ytterligare 30% billigare inrikesfrakt",
         "Ytterligare 30% billigare utrikesfrakt",
       ],
-      buttonLabel: "Aktivera Sendigo Plus",
+      buttonLabel: "Sendigo Plus",
+      buttonLink: "/sign-up",
       onButtonClick: () => console.log("Plus Plan selected"),
     },
     {
@@ -38,10 +39,10 @@ const Priceplan = () => {
         "Skräddarsydd prisplan",
         "Dedikerad fraktexpert",
       ],
-      buttonLabel: "Aktivera Sendigo Pro",
+      buttonLabel: "Kontakt Sälj",
+      buttonLink: "mailto:sendigo@example.com",
       onButtonClick: () => console.log("Plus Plan selected"),
     },
-    // Add your Pro plan details here
   ];
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 py-8">

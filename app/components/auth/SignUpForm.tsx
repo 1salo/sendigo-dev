@@ -19,16 +19,16 @@ import { useState } from "react";
 
 const FormSchema = z
   .object({
-    email: z.string().min(1, "Email is required").email("Invalid email"),
+    email: z.string().min(1, "Mail krävs").email("Ogiltlig mail"),
     password: z
       .string()
-      .min(1, "Password is required")
-      .min(8, "Password must have than 8 characters"),
-    confirmPassword: z.string().min(1, "Password confirmation is required"),
+      .min(1, "Lösenord krävs")
+      .min(8, "Lösenordet måste bestå av mer än 8 tecken"),
+    confirmPassword: z.string().min(1, "Lösenordsbekräftelse krävs"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
-    message: "Password do not match",
+    message: "Lösenordet matchar inte",
   });
 
 const SignUpForm = () => {
@@ -96,7 +96,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500">
+                    <FormMessage className="text-red-500 mt-1">
                       {form.formState.errors.email?.message}
                     </FormMessage>
                   </FormItem>
@@ -115,7 +115,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500" />
+                    <FormMessage className="text-red-500 mt-1" />
                   </FormItem>
                 )}
               />
@@ -132,7 +132,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500" />
+                    <FormMessage className="text-red-500 mt-1" />
                   </FormItem>
                 )}
               />

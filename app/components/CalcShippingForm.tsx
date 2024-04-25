@@ -2,21 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import Link from "next/link";
-
-interface IFormInput {
-  fromCountry: string;
-  toCountry: string;
-  goodsType: string;
-  weight: number;
-}
 
 const ShippingForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const route = useRouter();
 
   const handleButtonClick = async () => {
     setIsLoading(true);
+    route.push("/sign-up");
   };
 
   return (
@@ -44,9 +37,7 @@ const ShippingForm: React.FC = () => {
         <span className="label-text mb-2">Välj godstyp</span>
         <div>
           <select className="select select-bordered">
-            <option disabled selected>
-              Välj godstyp
-            </option>
+            <option disabled>Välj godstyp</option>
             <option>Paket</option>
             <option>Pall</option>
             <option>Ospecificerat</option>
@@ -55,10 +46,10 @@ const ShippingForm: React.FC = () => {
       </div>
 
       <div className="flex flex-col md:mb-0 relative">
-        <span className="label-text mb-2">Till land</span>
+        <span className="label-text mb-2">Vikt</span>
         <input
           type="text"
-          placeholder="Land"
+          placeholder="Vikt"
           className="input input-bordered w-full max-w-xs"
         />
         <div className="absolute inset-y-0 right-0 pr-3 pt-8 flex items-center pointer-events-none">
@@ -67,11 +58,13 @@ const ShippingForm: React.FC = () => {
       </div>
 
       <div className="mt-6">
-        <Link
+        <button
           onClick={handleButtonClick}
-          className={`btn btn-outline ${isLoading ? "w-32 disabled:" : ""}`}
+          className={` w-44 btn btn-primary ${
+            isLoading ? "w-44 relative" : ""
+          }`}
           type="submit"
-          href="/sign-up"
+          disabled={isLoading}
         >
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -80,7 +73,7 @@ const ShippingForm: React.FC = () => {
           ) : (
             "Beräkna pris"
           )}
-        </Link>
+        </button>
       </div>
     </form>
   );

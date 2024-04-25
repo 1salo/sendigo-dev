@@ -46,7 +46,7 @@ const PricePlanPage = () => {
         {/* Full-width white background for the FAQ section */}
         <div className="bg-white">
           {/* Content centered and constrained within max-width */}
-          <div className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 pb-10">
+          <div className="mx-9 pt-10 pb-40">
             <h1 className="text-5xl font-normal pt-10">Vanliga frågor</h1>
             {faqs.map((item, index) => (
               <Accordion

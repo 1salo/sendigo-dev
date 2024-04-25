@@ -76,7 +76,7 @@ const SignInForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500 mt-1" />
                   </FormItem>
                 )}
               />
@@ -94,7 +94,7 @@ const SignInForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500 mt-1" />
                   </FormItem>
                 )}
               />

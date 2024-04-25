@@ -7,6 +7,7 @@ import MainLayout from "./layouts/MainLayout/MainLayout";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
 import { authOptions } from "./api/auth/[...nextauth]/authOptions";
+import PriceCompare from "./components/PriceCompare";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -18,6 +19,7 @@ export default async function Home() {
         <SectionOne />
         <PriceCalculator />
         <SectionTwo />
+        <PriceCompare />
         <SectionThree />
         <Footer />
       </MainLayout>

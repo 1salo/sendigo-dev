@@ -1,5 +1,5 @@
 import React from "react";
-import ShippingForm from "./ShippingForm";
+import ShippingForm from "./CalcShippingForm";
 
 const PriceCalculator: React.FC = () => {
   return (

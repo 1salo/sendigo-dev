@@ -1,10 +1,17 @@
 import React from "react";
 import Logo from "./components/ui/Logo";
+import Image from "next/image";
 
 const Footer = () => {
   return (
     <footer className="footer p-10 bg-neutral text-neutral-content">
-      <img src="/images/sendigologowhite.png" alt="logo" className="w-24" />
+      <Image
+        src="/images/sendigologowhite.png"
+        alt="logo"
+        className="w-24"
+        width={100}
+        height={100}
+      />
       <nav>
         <h6 className="footer-title">Om oss</h6>
         <a className="link link-hover">Om Sendigo</a>

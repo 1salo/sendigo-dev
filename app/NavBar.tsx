@@ -35,13 +35,19 @@ const NavBar = () => {
     <div
       className={`fixed navbar transition-all duration-200 z-50 ${
         isScrolled
-          ? "bg-white bg-opacity-80 backdrop-blur h-24 z-50"
+          ? "bg-white bg-opacity-80 backdrop-blur h-24 z-50 shadow-sm"
           : "bg-transparent h-24 z-50"
       }`}
     >
       <div className="flex-1 flex items-center">
         <Link href="/" className="flex items-center ml-5">
-          <Logo />
+          <Image
+            src="/images/sendigologo.png"
+            alt="Logo"
+            width={100}
+            height={50}
+            className="mr-5"
+          />
         </Link>
         <ul className="menu menu-horizontal p-0">
           <li>

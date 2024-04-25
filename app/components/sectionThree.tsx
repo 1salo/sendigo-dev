@@ -29,9 +29,9 @@ const Faq = () => {
   };
 
   return (
-    <div className="container mx-auto pb-32 pt-8">
-      <h1 className="text-6xl font-normal mb-8 mt-8">Vanliga frågor</h1>
-      <div className="flex flex-col gap-10">
+    <div className="bg-white">
+      <h1 className="text-6xl font-normal my-8 mx-8">Vanliga frågor</h1>
+      <div className="flex flex-col gap-10 mx-9 pt-10 pb-40">
         {faqs.map((item, index) => (
           <Accordion
             key={index}

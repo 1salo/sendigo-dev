@@ -24,14 +24,14 @@ const Accordion: FunctionComponent<AccordionProps> = ({
       setTimeout(() => {
         onClick(); // Change the state to open after rotation completes
         setIsRotating(false); // Reset rotation state after it completes
-      }, 800); // This matches the duration of the rotation
+      }, 700); // This matches the duration of the rotation
     } else {
       // Start rotation for closing
       setCloseIconRotating(true);
       setTimeout(() => {
         onClick(); // Close the accordion after the rotation
         setCloseIconRotating(false); // Reset rotation state
-      }, 800); // Rotation duration for closing
+      }, 700); // Rotation duration for closing
     }
   };
 
@@ -57,12 +57,12 @@ const Accordion: FunctionComponent<AccordionProps> = ({
         )}
       </button>
       <div
-        className={`transition-all duration-700 ease-in-out ${
-          isOpen ? "max-h-[2000px]" : "max-h-0"
+        className={`transition-all duration-500 ease-in-out ${
+          isOpen ? "max-h-auto" : "max-h-0"
         } overflow-hidden`}
       >
         <div
-          className={`transition-opacity duration-700 ease-linear ${
+          className={`transition-opacity duration-500 ease-linear ${
             isOpen ? "opacity-100" : "opacity-0"
           } px-6 py-8`}
         >

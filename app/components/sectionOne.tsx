@@ -5,9 +5,9 @@ import Image from "next/image";
 
 const SectionOne: React.FC = () => {
   return (
-    <div className="h-screen flex flex-col justify-center items-center sendigo-main-color">
-      <div className="flex justify-center items-center">
-        <div className="mr-4">
+    <div className="h-screen flex flex-col justify-center items-center sendigo-main-color relative">
+      <div className="absolute inset-0 z-10 flex justify-start items-center px-8 md:px-12 lg:px-16">
+        <div className="bg-white p-8 shadow-xl">
           <h1 className="text-7xl font-medium">Vart vill du skicka?</h1>
           <h2>Hitta den billigaste eller snabbaste frakten nu</h2>
           <Link
@@ -17,8 +17,16 @@ const SectionOne: React.FC = () => {
             <span>Kom igång</span> <ArrowRightIcon className="w-5 md:w-6" />
           </Link>
         </div>
+      </div>
+      <div className="absolute inset-0 z-0 flex justify-center items-center">
         <div className="ml-8 md:ml-12 lg:ml-16">
-          <Image src="/images/test.jpg" alt="lol" width={500} height={500} />
+          <Image
+            src="/images/falling-packages.png"
+            alt="packagesfalling"
+            layout="fill"
+            objectFit="cover"
+            priority={true}
+          />
         </div>
       </div>
     </div>
