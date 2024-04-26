@@ -1,10 +1,9 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import Logo from "./components/ui/Logo";
 
 const NavBar = () => {
   const { status, data: session } = useSession();
@@ -98,11 +97,11 @@ const NavBar = () => {
                 <Link href="/dashboard">Dashboard</Link>
               </li>
               <li>
-                <Link href="/profile">Profile</Link>
+                <Link href="/profile">Mina sidor</Link>
               </li>
               <li>
                 <Link href="/" onClick={handleSignOut}>
-                  Logout
+                  Logga ut
                 </Link>
               </li>
             </ul>

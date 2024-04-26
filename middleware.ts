@@ -23,6 +23,7 @@ export async function middleware(request: NextRequest) {
     "/newshipment",
     "/profile",
     "/settings",
+    "/newshipment/compare",
   ];
 
   // Check if the current route is protected and no token is found
@@ -45,5 +46,6 @@ export const config = {
     "/settings",
     "/sign-in",
     "/sign-up",
+    "/newshipment/compare",
   ],
 };

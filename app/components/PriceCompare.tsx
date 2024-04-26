@@ -94,15 +94,24 @@ const PriceCompare = () => {
     const packages = packageCount ?? 0;
     const pallets = palletCount ?? 0;
 
-    // Default plan
+    // Default plan is Free Plan (index 0)
     let selectedPlanIndex = 0;
 
-    if (packages <= 59 && pallets < 5) {
-      selectedPlanIndex = 0; // Free Plan
-    } else if (packages > 59 || pallets > 1) {
-      selectedPlanIndex = 1;
-    } else pallets > 373 && packages > 6 
-    selectedPlanIndex = 2;
+    // Check for Pro Plan first (highest priority)
+    if ((pallets > 374 && packages === 0) || (pallets > 374 && packages > 6)) {
+      selectedPlanIndex = 2; // Pro Plan
+    }
+    // Then check for Plus Plan conditions
+    else if (
+      pallets > 4 ||
+      (pallets === 1 && packages > 45) ||
+      (pallets === 2 && packages > 33) ||
+      (pallets === 3 && packages > 21) ||
+      (pallets === 4 && packages > 9) ||
+      (pallets === 0 && packages > 58)
+    ) {
+      selectedPlanIndex = 1; // Plus Plan
+    }
 
     setSelectedPlan(plans[selectedPlanIndex]);
 

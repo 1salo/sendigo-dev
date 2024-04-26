@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -14,6 +14,13 @@ const handleSignOut = async (e: React.MouseEvent<HTMLAnchorElement>) => {
 };
 
 const DashboardNavBar = () => {
+  useEffect(() => {
+    document.body.style.paddingTop = "4rem";
+    return () => {
+      document.body.style.paddingTop = "";
+    };
+  }, []);
+
   const currentPath = usePathname();
   const { data: session } = useSession();
   const userProfileImage =
@@ -24,7 +31,7 @@ const DashboardNavBar = () => {
       : "/images/default-profilepic.jpeg";
 
   return (
-    <div className="navbar divide-x-2 border-b-2 h-16 z-50">
+    <div className="navbar divide-x-2 border-b-2 h-16 z-50 bg-white fixed top-0 left-0 w-full">
       <div className="flex-1 flex items-center">
         <Link href="/dashboard" className="flex items-center ml-5">
           <Logo />
