@@ -6,7 +6,9 @@ const DashboardShippingZipForm = () => {
       <div className="card-body">
         <div className="flex flex-row justify-between items-center mb-4">
           <h2 className="card-title">Prisförfrågan</h2>
-          <button className="btn btn-ghost">Rensa</button>
+          <button className="btn text-red-500 bg-white border-red-500 hover:bg-red-200">
+            Rensa
+          </button>
         </div>
 
         <div className="flex flex-col md:flex-row md:space-x-4">

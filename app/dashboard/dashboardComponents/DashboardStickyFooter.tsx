@@ -3,7 +3,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Link from "next/link";
 
-const DashboardStickyFooter = () => {
+interface Props {
+  buttonLabel: string;
+}
+
+const DashboardStickyFooter = ({ buttonLabel }: Props) => {
   const [startDate, setStartDate] = useState(new Date());
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -29,7 +33,7 @@ const DashboardStickyFooter = () => {
   }, []);
 
   return (
-    <div className="bottom-0 right-0 z-50 bg-white rounded shadow-xl md:h-20 lg:h-20 md:static md:mx-auto md:bg-white lg:sticky lg:bottom-0 lg:right-auto lg:p-0">
+    <div className="bottom-0 border-t w-full right-0 z-50 bg-white rounded shadow-xl md:h-20 lg:h-20 md:static md:mx-auto md:bg-white lg:sticky lg:bottom-0 lg:right-auto lg:p-0">
       <div className="flex flex-col sm:flex-row justify-center items-center p-4">
         <div className="flex flex-col sm:flex-row items-center justify-center sm:space-x-4 mb-4 sm:mb-0">
           <DatePicker
@@ -52,8 +56,11 @@ const DashboardStickyFooter = () => {
             }
           />
           <div>
-            <Link href="/newshipment/compare" className="btn btn-primary md:w-36 lg:w-36 sm:w-44">
-              Beräkna pris
+            <Link
+              href="/newshipment/compare"
+              className="btn btn-primary w-auto"
+            >
+              {buttonLabel}
             </Link>
           </div>
         </div>

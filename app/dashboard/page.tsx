@@ -21,7 +21,7 @@ const Page = () => {
               <div className="my-4"></div>
               <DashboardShippingPackageForm />
               <div className="my-4"></div>
-              <DashboardStickyFooter />
+              <DashboardStickyFooter buttonLabel="Beräkna pris" />
               <div className="my-4"></div>
             </div>
           </div>
