@@ -98,7 +98,16 @@ const PriceCompare = () => {
     let selectedPlanIndex = 0;
 
     // Check for Pro Plan first (highest priority)
-    if ((pallets > 374 && packages === 0) || (pallets > 374 && packages > 6)) {
+    if (
+      (pallets > 374 && packages === 0) ||
+      (packages > 374 && packages > 4) ||
+      packages > 2307 ||
+      (packages > 2301 && pallets === 1) ||
+      (packages > 2295 && pallets === 2) ||
+      (packages > 2289 && pallets === 3) ||
+      (packages > 2283 && pallets === 4) ||
+      (packages > 2283 && pallets > 4)
+    ) {
       selectedPlanIndex = 2; // Pro Plan
     }
     // Then check for Plus Plan conditions

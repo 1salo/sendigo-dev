@@ -26,8 +26,12 @@ export async function middleware(request: NextRequest) {
     "/newshipment/compare",
   ];
 
-  // Check if the current route is protected and no token is found
-  if (protectedRoutes.includes(path) && !token) {
+  // Check if the current route is protected, not an API route, and no token is found
+  if (
+    protectedRoutes.includes(path) &&
+    !path.startsWith("/api/") && // Check if it's not an API route
+    !token
+  ) {
     // Redirect to sign-in page
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }

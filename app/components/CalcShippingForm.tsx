@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import CountryDropdown from "./CountryDropdown";
+import GoodsTypeDropdown from "./GoodstypeDropdown";
 
 const ShippingForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,55 +15,51 @@ const ShippingForm: React.FC = () => {
   };
 
   return (
-    <form className="flex flex-wrap gap-4 items-center justify-center">
-      <div className="flex flex-col md:mb-0">
+    <form className="flex flex-wrap gap-4 items-end justify-center">
+      <div className="flex flex-col md:mb-0 w-56">
         <span className="label-text mb-2">Från land</span>
-        <span className="{`se`}" />
-        <input
-          type="text"
-          placeholder="Land"
-          className="input input-bordered w-full max-w-xs"
-        />
+        <CountryDropdown />
       </div>
 
-      <div className="flex flex-col md:mb-0">
+      <div className="flex flex-col md:mb-0 w-56">
         <span className="label-text mb-2">Till land</span>
-        <input
-          type="text"
-          placeholder="Land"
-          className="input input-bordered w-full max-w-xs"
-        />
+        <CountryDropdown />
       </div>
 
-      <div className="flex flex-col md:mb-0">
-        <span className="label-text mb-2">Välj godstyp</span>
-        <div>
-          <select className="select select-bordered">
-            <option disabled>Välj godstyp</option>
-            <option>Paket</option>
-            <option>Pall</option>
-            <option>Ospecificerat</option>
-          </select>
-        </div>
+      <div className="flex flex-col md:mb-0 w-56">
+        <GoodsTypeDropdown />
       </div>
 
       <div className="flex flex-col md:mb-0 relative">
         <span className="label-text mb-2">Vikt</span>
-        <input
-          type="text"
-          placeholder="Vikt"
-          className="input input-bordered w-full max-w-xs"
-        />
-        <div className="absolute inset-y-0 right-0 pr-3 pt-8 flex items-center pointer-events-none">
-          <span>kg</span>
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Vikt"
+            className="input input-bordered w-full no-spinners"
+            maxLength={5}
+            onInput={(e) => {
+              e.currentTarget.value = e.currentTarget.value
+                .replace(/[^0-9.]/g, "")
+                .slice(0, 5);
+            }}
+            onKeyDown={(e) => {
+              if (["e", "E", "+", "-"].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
+          />
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <span>kg</span>
+          </div>
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="flex flex-col md:mb-0 self-end">
         <button
           onClick={handleButtonClick}
-          className={` w-44 btn btn-primary ${
-            isLoading ? "w-44 relative" : ""
+          className={`btn btn-primary h-full w-44 ${
+            isLoading ? "relative" : ""
           }`}
           type="submit"
           disabled={isLoading}

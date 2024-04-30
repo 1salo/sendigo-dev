@@ -24,7 +24,6 @@ const NewShipmentPage = () => {
           </div>
         </div>
 
-        {/* Place SummaryCard to the right of SenderCard and ReceiverCard with space */}
         <div className="hidden lg:block lg:relative lg:right-4 lg:flex-1 lg:ml-7">
           <div className="lg:sticky lg:top-16 lg:overflow-y-auto lg:max-h-screen shadow-md">
             <SummaryCard />
@@ -32,12 +31,10 @@ const NewShipmentPage = () => {
         </div>
       </div>
 
-      {/* Render NewShipmentPackageForm only on smaller screens */}
       <div className="w-full px-4 mt-4 lg:hidden">
         <NewShipmentPackageForm />
       </div>
 
-      {/* Render NewShipmentPackageForm on larger screens */}
       <div className="hidden lg:block w-full lg:w-1/3 xl:w-2/5 px-4 mt-4">
         <NewShipmentPackageForm />
       </div>
