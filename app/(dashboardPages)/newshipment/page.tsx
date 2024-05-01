@@ -6,6 +6,7 @@ import NewShipmentPackageForm from "@/app/dashboard/dashboardComponents/newshipm
 import ReceiverCard from "@/app/dashboard/dashboardComponents/receiverCard";
 import SenderCard from "@/app/dashboard/dashboardComponents/senderCard";
 import SummaryCard from "@/app/dashboard/dashboardComponents/summaryCard";
+import { useState } from "react";
 
 const NewShipmentPage = () => {
   return (
@@ -13,7 +14,6 @@ const NewShipmentPage = () => {
       <DashboardNavBar />
 
       <div className="px-4 py-4 flex flex-col lg:flex-row justify-center gap-4">
-        {/* Place SenderCard and ReceiverCard in a flex container */}
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 w-full lg:max-w-5xl xl:max-w-6xl ml-3 ">
           <div className="flex-1">
             <SenderCard />

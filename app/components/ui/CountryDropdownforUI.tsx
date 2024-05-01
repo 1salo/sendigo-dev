@@ -1,27 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
-import { COUNTRIES } from "../_lib/countries";
-import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
+import { COUNTRIES } from "@/app/_lib/countries";
+import { IoMdArrowDropup } from "react-icons/io";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 interface Country {
   title: string;
-  engTitle: string;
   value: string;
 }
 
-interface CountryDropdownProps {
-  selectedCountry: Country;
-  onSelectCountry: (country: Country) => void;
-}
+const CountryDropdownForUI = () => {
+  const defaultCountry: Country = { title: "Sverige", value: "SE" };
 
-const CountryDropdown: React.FC<CountryDropdownProps> = ({
-  selectedCountry,
-  onSelectCountry,
-}) => {
+  const [selectedCountry, setSelectedCountry] =
+    useState<Country>(defaultCountry);
   const [isDropdownVisible, setIsDropdownVisible] = useState<boolean>(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleSelectCountry = (country: Country) => {
-    onSelectCountry(country);
+    setSelectedCountry(country);
     setIsDropdownVisible(false);
   };
 
@@ -35,15 +31,13 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
   };
 
   useEffect(() => {
-    const handleMouseDown = (event: MouseEvent) => {
-      handleClickOutside(event);
-    };
-
-    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const displayCountries = isDropdownVisible ? COUNTRIES : [];
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -51,9 +45,10 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
         className="input input-bordered w-full flex justify-between items-center cursor-pointer"
         onClick={() => setIsDropdownVisible(!isDropdownVisible)}
       >
+        {/* Always show the selected country, defaulting to Sweden */}
         <div className="flex items-center">
           <img
-            alt={`${selectedCountry.value} flag`}
+            alt={selectedCountry.value}
             src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${selectedCountry.value}.svg`}
             className="inline h-4 rounded-sm mr-2"
           />
@@ -66,14 +61,14 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
       {isDropdownVisible && (
         <div className="absolute z-10 mt-1 w-full bg-white rounded shadow-md">
           <div className="max-h-60 overflow-y-auto">
-            {COUNTRIES.map((country) => (
+            {displayCountries.map((country) => (
               <div
                 key={country.value}
                 className="cursor-pointer p-2 hover:bg-gray-100 flex items-center"
                 onClick={() => handleSelectCountry(country)}
               >
                 <img
-                  alt={`${country.value} flag`}
+                  alt={country.value}
                   src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${country.value}.svg`}
                   className="inline h-4 rounded-sm mr-2"
                 />
@@ -87,4 +82,4 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
   );
 };
 
-export default CountryDropdown;
+export default CountryDropdownForUI;

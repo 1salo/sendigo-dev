@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import CountryDropdown from "@/app/components/CountryDropdown";
+import { COUNTRIES } from "@/app/_lib/countries";
 
 interface Prediction {
   formatted_address: string;
@@ -6,22 +8,38 @@ interface Prediction {
   postal_code: string;
   city: string;
   street: string;
-  country: string;
+  country: string; // English title of the country for matching with API data
+}
+
+interface Country {
+  title: string; // Swedish title
+  engTitle: string; // English title
+  value: string;
 }
 
 const SenderCard = () => {
   const [address, setAddress] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [postcode, setPostcode] = useState("");
-  const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+  const [contactName, setContactName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [country, setCountry] = useState<Country>({
+    title: "Sverige",
+    engTitle: "Sweden",
+    value: "SE",
+  });
   const [suggestions, setSuggestions] = useState<Prediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const lastUserInput = useRef("");
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setAddress(newValue);
-    // Do not update lastUserInput here
+    setAddress(e.target.value);
+  };
+
+  const handleCompanyNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCompanyName(e.target.value);
   };
 
   const handlePostcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,43 +50,64 @@ const SenderCard = () => {
     setCity(e.target.value);
   };
 
-  const handleCountryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCountry(e.target.value);
+  const handleContactNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContactName(e.target.value);
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneNumber(e.target.value);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   };
 
   const handleSuggestionClick = (suggestion: Prediction) => {
     setAddress(suggestion.street);
     setPostcode(suggestion.postal_code);
     setCity(suggestion.city);
-    setCountry(suggestion.country);
+    lastUserInput.current = suggestion.street;
+    // Assuming the country returned by the API is in English and needs matching
+    const foundCountry = COUNTRIES.find(
+      (c) => c.engTitle === suggestion.country
+    );
+    if (foundCountry) {
+      setCountry(foundCountry);
+    }
     setShowSuggestions(false);
-    lastUserInput.current = suggestion.street; // Ensure this reflects the last user confirmed input
+  };
+
+  const handleClearFields = () => {
+    setAddress("");
+    setPostcode("");
+    setCity("");
+    setCountry({
+      title: "Sverige",
+      engTitle: "Sweden",
+      value: "SE",
+    });
+    setContactName("");
+    setPhoneNumber("");
+    setEmail("");
+    setCompanyName("");
   };
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
-
     if (address && address !== lastUserInput.current) {
       timerId = setTimeout(() => {
         fetch(`/api/google?input=${address}`)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data: Prediction[]) => {
+          .then((response) => response.json())
+          .then((data) => {
             setSuggestions(data);
             setShowSuggestions(true);
-            lastUserInput.current = address; // Update lastUserInput when API call is made
           })
           .catch((error) => {
             console.error("Error fetching suggestions:", error);
-            // Handle the error by setting suggestions to an empty array and hiding suggestions
             setSuggestions([]);
             setShowSuggestions(false);
           });
-      }, 1000);
+      }, 300);
     } else {
       setShowSuggestions(false);
     }
@@ -85,11 +124,8 @@ const SenderCard = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showSuggestions]);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="card bg-white shadow-xl mx-auto items-center w-full md:max-w-md lg:max-w-lg xl:max-w-xl">
@@ -97,7 +133,10 @@ const SenderCard = () => {
         <div className="card-body">
           <div className="flex flex-row justify-between mb-4 items-center ">
             <h2 className="card-title font-normal">Avsändare</h2>
-            <button className="btn text-red-500 bg-white border-red-500 hover:bg-red-200">
+            <button
+              className="btn text-red-500 bg-white border-red-500 hover:bg-red-200"
+              onClick={handleClearFields}
+            >
               Rensa
             </button>
           </div>
@@ -108,7 +147,12 @@ const SenderCard = () => {
           <div className="border rounded py-4 px-4 shadow-inner mb-4">
             <div className="flex flex-col  mb-4">
               <span className="label-text">Företagsnamn</span>
-              <input type="text" className="input input-bordered w-full" />
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={companyName}
+                onChange={handleCompanyNameChange}
+              />
             </div>
 
             <div className="relative mb-4">
@@ -122,7 +166,7 @@ const SenderCard = () => {
                 onFocus={() => setShowSuggestions(true)}
               />
               {showSuggestions && suggestions.length > 0 && (
-                <div className="bg-white border rounded shadow-lg w-full absolute z-10 top-full mt-1 suggestion-dropdown">
+                <div className="bg-white border rounded shadow-lg w-full absolute z-10 top-full mt-1 suggestion-dropdown max-h-60 overflow-y-auto">
                   {suggestions.map((suggestion) => (
                     <div
                       key={suggestion.place_id}
@@ -159,11 +203,9 @@ const SenderCard = () => {
             </div>
             <div className="flex flex-col  md:mb-0">
               <span className="label-text">Land</span>
-              <input
-                type="text"
-                className="input input-bordered min-w-64"
-                value={country}
-                onChange={handleCountryChange}
+              <CountryDropdown
+                selectedCountry={country}
+                onSelectCountry={setCountry}
               />
             </div>
           </div>
@@ -171,15 +213,30 @@ const SenderCard = () => {
           <div className="border-2 rounded py-4 px-4 border-gray-200">
             <div className="flex flex-col mb-4">
               <span className="label-text">Kontaktnamn</span>
-              <input type="text" className="input input-bordered w-full" />
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={contactName}
+                onChange={handleContactNameChange}
+              />
             </div>
             <div className="flex flex-col  mb-4">
               <span className="label-text">Telefon</span>
-              <input type="text" className="input input-bordered w-full" />
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={phoneNumber}
+                onChange={handlePhoneNumberChange}
+              />
             </div>
             <div className="flex flex-col mb-4">
               <span className="label-text">E-postadress</span>
-              <input type="text" className="input input-bordered w-full" />
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={email}
+                onChange={handleEmailChange}
+              />
             </div>
           </div>
 

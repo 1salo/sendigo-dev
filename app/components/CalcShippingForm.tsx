@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import CountryDropdown from "./CountryDropdown";
 import GoodsTypeDropdown from "./GoodstypeDropdown";
+import CountryDropdownForUI from "./ui/CountryDropdownforUI";
 
 const ShippingForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,12 +19,12 @@ const ShippingForm: React.FC = () => {
     <form className="flex flex-wrap gap-4 items-end justify-center">
       <div className="flex flex-col md:mb-0 w-56">
         <span className="label-text mb-2">Från land</span>
-        <CountryDropdown />
+        <CountryDropdownForUI />
       </div>
 
       <div className="flex flex-col md:mb-0 w-56">
         <span className="label-text mb-2">Till land</span>
-        <CountryDropdown />
+        <CountryDropdownForUI />
       </div>
 
       <div className="flex flex-col md:mb-0 w-56">

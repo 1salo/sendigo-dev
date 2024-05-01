@@ -1,4 +1,5 @@
 import CountryDropdown from "@/app/components/CountryDropdown";
+import CountryDropdownForUI from "@/app/components/ui/CountryDropdownforUI";
 import React from "react";
 
 const DashboardShippingZipForm = () => {
@@ -15,7 +16,7 @@ const DashboardShippingZipForm = () => {
         <div className="flex flex-col md:flex-row md:space-x-4">
           <div className="flex flex-col mb-4 md:mb-0 w-56">
             <span className="label-text">Från</span>
-            <CountryDropdown />
+            <CountryDropdownForUI />
           </div>
 
           <div className="flex flex-col">
@@ -30,7 +31,7 @@ const DashboardShippingZipForm = () => {
         <div className="flex flex-col md:flex-row md:space-x-4">
           <div className="flex flex-col mb-4 md:mb-0 w-56">
             <span className="label-text">Till</span>
-            <CountryDropdown />
+            <CountryDropdownForUI />
           </div>
 
           <div className="flex flex-col">

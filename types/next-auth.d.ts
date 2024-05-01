@@ -11,6 +11,7 @@ declare module "next-auth" {
 
   interface Session {
     user: User;
+    accessToken?: string; // Include accessToken in the session object
     token: {
       firstName: string | null;
       lastName: string | null;

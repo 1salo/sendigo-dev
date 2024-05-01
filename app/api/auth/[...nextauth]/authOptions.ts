@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.name = user.name;
         token.image = user.image || null;
-        token.companyName = user.companyName || null; // Adding custom fields
+        token.companyName = user.companyName || null;
         token.firstName = user.firstName || null;
         token.lastName = user.lastName || null;
       }
@@ -80,11 +80,13 @@ export const authOptions: NextAuthOptions = {
           email: token.email as string,
           name: token.name as string,
           image: token.image as string | null,
-          companyName: token.companyName as string | null, // Ensure this is included
+          companyName: token.companyName as string | null,
           firstName: token.firstName as string | null,
           lastName: token.lastName as string | null,
         };
       }
+      // Include the JWT itself in the session for client-side use
+      session.accessToken = JSON.stringify(token); // Convert token object to string
       return session;
     },
   },

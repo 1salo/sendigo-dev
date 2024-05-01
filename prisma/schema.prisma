@@ -53,6 +53,7 @@ model User {
   createdAt      DateTime  @default(now())
   accounts       Account[]
   sessions       Session[]
+  contacts       Contact[]
 }
 
 model VerificationToken {
@@ -61,4 +62,20 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Contact {
+  id          Int     @id @default(autoincrement())
+  companyName String
+  name        String
+  street      String?
+  city        String?
+  country     String?
+  email       String?
+  phone       String?
+  postalcode  String?
+  userId      String  @map("user_id")
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

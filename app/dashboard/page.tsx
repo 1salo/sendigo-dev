@@ -8,7 +8,7 @@ import DashboardStickyFooter from "./dashboardComponents/DashboardStickyFooter";
 
 const Page = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-white">
       <DashboardNavBar />
       <div className="flex-grow">
         <div className="flex flex-col md:flex-row p-4 md:p-8">
