@@ -25,7 +25,7 @@ const NewShipmentPage = () => {
         </div>
 
         <div className="hidden lg:block lg:relative lg:right-4 lg:flex-1 lg:ml-7">
-          <div className="lg:sticky lg:top-16 lg:overflow-y-auto lg:max-h-screen shadow-md">
+          <div className="lg:sticky lg:top-16 lg:overflow-y-auto lg:max-h-screen shadow-lg">
             <SummaryCard />
           </div>
         </div>

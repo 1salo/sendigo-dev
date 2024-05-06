@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import CountryDropdown from "@/app/components/CountryDropdown";
 import { COUNTRIES } from "@/app/_lib/countries";
+import { useSession } from "next-auth/react";
+import LoadingSkeleton from "@/app/components/ui/LoadingSkeleton";
 
 interface Prediction {
   formatted_address: string;
@@ -8,16 +10,34 @@ interface Prediction {
   postal_code: string;
   city: string;
   street: string;
-  country: string; // English title of the country for matching with API data
+  country: string;
 }
 
 interface Country {
-  title: string; // Swedish title
-  engTitle: string; // English title
+  title: string;
+  engTitle: string;
   value: string;
 }
 
+interface Contact {
+  id: number;
+  companyName: string;
+  name: string;
+  street?: string;
+  postalcode?: string;
+  city?: string;
+  country?: string;
+  email?: string;
+  phone?: string;
+}
+
 const SenderCard = () => {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
+
+  const [selectedContact, setSelectedContact] = useState("");
   const [address, setAddress] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [postcode, setPostcode] = useState("");
@@ -78,6 +98,7 @@ const SenderCard = () => {
   };
 
   const handleClearFields = () => {
+    setSelectedContact("");
     setAddress("");
     setPostcode("");
     setCity("");
@@ -91,6 +112,22 @@ const SenderCard = () => {
     setEmail("");
     setCompanyName("");
   };
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch(`/api/contacts?userId=${session.user.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setContacts(data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch contacts", err);
+          setError("Failed to fetch contacts");
+          setIsLoading(false);
+        });
+    }
+  }, [session?.user?.id]);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -127,6 +164,53 @@ const SenderCard = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleSelectContact = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = parseInt(e.target.value, 10);
+    const contact = contacts.find((c) => c.id === selectedId);
+    if (contact) {
+      setSelectedContact(contact.companyName);
+      setCompanyName(contact.companyName);
+      setContactName(contact.name);
+      setAddress(contact.street || "");
+      setPostcode(contact.postalcode || "");
+      setCity(contact.city || "");
+      setEmail(contact.email || "");
+      setPhoneNumber(contact.phone || "");
+      setContactCountry(contact.country);
+    } else {
+      handleClearFields();
+    }
+  };
+
+  const setContactCountry = (countryCode: string | undefined) => {
+    console.log("Attempting to set country for:", countryCode); // Debug log
+    if (countryCode) {
+      // Find the country in COUNTRIES where the value matches the country code from the contact
+      const foundCountry = COUNTRIES.find((c) => c.value === countryCode);
+      console.log("Found country:", foundCountry); // Debug log
+      if (foundCountry) {
+        setCountry(foundCountry);
+      } else {
+        console.log("No country found, setting to default (Sweden)"); // Debug log
+        setCountry({
+          title: "Sverige",
+          engTitle: "Sweden",
+          value: "SE",
+        });
+      }
+    } else {
+      console.log("Country code is undefined, setting to default (Sweden)"); // Debug log
+      setCountry({
+        title: "Sverige",
+        engTitle: "Sweden",
+        value: "SE",
+      });
+    }
+  };
+
+  if (isLoading) return <LoadingSkeleton />;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="card bg-white shadow-xl mx-auto items-center w-full md:max-w-md lg:max-w-lg xl:max-w-xl">
       <div className="flex flex-col md:flex-row md:space-x-4">
@@ -139,6 +223,21 @@ const SenderCard = () => {
             >
               Rensa
             </button>
+          </div>
+          <div>
+            <p>Använd en kontakt från din adressbok</p>
+            <select
+              className="select select-bordered w-full"
+              value={selectedContact}
+              onChange={handleSelectContact}
+            >
+              <option value="">{selectedContact}</option>
+              {contacts.map((contact) => (
+                <option key={contact.id} value={contact.id}>
+                  {contact.companyName} - {contact.name}
+                </option>
+              ))}
+            </select>
           </div>
           <button className="btn btn-primary btn-sm w-44 font-mono font-thin mb-2">
             Använd hemadress

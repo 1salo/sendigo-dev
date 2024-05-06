@@ -41,27 +41,39 @@ model Session {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  companyName    String?
-  firstName      String?
-  lastName       String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  hashedPassword String
-  adress         String?
-  image          String?
-  createdAt      DateTime  @default(now())
-  accounts       Account[]
-  sessions       Session[]
-  contacts       Contact[]
+  id                 String              @id @default(cuid())
+  companyName        String?
+  firstName          String?
+  lastName           String?
+  email              String?             @unique
+  emailVerified      DateTime?
+  hashedPassword     String
+  adress             String?
+  image              String?
+  createdAt          DateTime            @default(now())
+  organizationNumber String?
+  street             String?
+  city               String?
+  postalCode         String?
+  country            String?
+  accounts           Account[]
+  sessions           Session[]
+  contacts           Contact[]
+  Shipment           Shipment[]
+  Invoice            Invoice[]
+  AuditLog           AuditLog[]
+  ResetToken         ResetToken[]
+  VerificationToken  VerificationToken[]
 }
 
 model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+  id      String   @id @default(cuid())
+  token   String   @unique
+  expires DateTime
+  userId  String
+  user    User     @relation(fields: [userId], references: [id])
 
-  @@unique([identifier, token])
+  @@index([token])
 }
 
 model Contact {
@@ -78,4 +90,71 @@ model Contact {
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model Carrier {
+  id       Int        @id @default(autoincrement())
+  name     String
+  logo     String?
+  services Service[]
+  Shipment Shipment[]
+}
+
+model Service {
+  id           Int        @id @default(autoincrement())
+  carrierId    Int
+  description  String
+  price        Float
+  deliveryTime Int // Antal dagar eller timmar till leverans
+  carrier      Carrier    @relation(fields: [carrierId], references: [id])
+  Shipment     Shipment[]
+}
+
+model Shipment {
+  id         String    @id @default(cuid())
+  userId     String
+  carrierId  Int
+  serviceId  Int
+  weight     Float // Vikt i kg
+  dimensions String // Mått (LxBxH)
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  carrier    Carrier   @relation(fields: [carrierId], references: [id])
+  service    Service   @relation(fields: [serviceId], references: [id])
+  Invoice    Invoice[]
+}
+
+model Invoice {
+  id         String    @id @default(cuid())
+  userId     String // Referens till användaren som fakturan tillhör
+  shipmentId String? // om fakturan är kopplad till en specifik försändelse
+  issuedDate DateTime // Datum då fakturan skapades
+  dueDate    DateTime // Betalningsförfallodatum
+  total      Float // Totalbelopp som ska betalas
+  currency   String // Valuta för transaktionen, t.ex. 'SEK', 'USD'
+  status     String // Status på fakturan, t.ex. 'Unpaid', 'Paid', 'Cancelled'
+  items      Json // Lista över fakturerade artiklar eller tjänster som en JSON-sträng
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shipment   Shipment? @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+
+  @@index([userId, shipmentId]) // Index för att förbättra sökningar baserade på användare och försändelse
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  actionType  String
+  description String
+  userId      String
+  occurredAt  DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ResetToken {
+  id     String   @id @default(cuid())
+  userId String
+  token  String   @unique
+  expiry DateTime
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
 }

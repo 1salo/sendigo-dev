@@ -1,5 +1,7 @@
 import { COUNTRIES } from "@/app/_lib/countries";
 import CountryDropdown from "@/app/components/CountryDropdown";
+import LoadingSkeleton from "@/app/components/ui/LoadingSkeleton";
+import { useSession } from "next-auth/react";
 import React, { useState, useEffect, useRef } from "react";
 
 interface Prediction {
@@ -17,7 +19,24 @@ interface Country {
   value: string;
 }
 
+interface Contact {
+  id: number;
+  companyName: string;
+  name: string;
+  street?: string;
+  postalcode?: string;
+  city?: string;
+  country?: string;
+  email?: string;
+  phone?: string;
+}
+
 const ReceiverCard = () => {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
+
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -132,6 +151,55 @@ const ReceiverCard = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch(`/api/contacts?userId=${session.user.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setContacts(data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch contacts", err);
+          setError("Failed to fetch contacts");
+          setIsLoading(false);
+        });
+    }
+  }, [session?.user?.id]);
+
+  const handleSelectContact = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = parseInt(e.target.value, 10);
+    const contact = contacts.find((c) => c.id === selectedId);
+    if (contact) {
+      setCompanyName(contact.companyName);
+      setContactName(contact.name);
+      setAddress(contact.street || "");
+      setPostcode(contact.postalcode || "");
+      setCity(contact.city || "");
+      setEmail(contact.email || "");
+      setPhoneNumber(contact.phone || "");
+      setContactCountry(contact.country);
+    } else {
+      handleClearFields();
+    }
+  };
+
+  const setContactCountry = (countryCode: string | undefined) => {
+    const foundCountry = COUNTRIES.find((c) => c.value === countryCode);
+    if (foundCountry) {
+      setCountry(foundCountry);
+    } else {
+      setCountry({
+        title: "Sverige",
+        engTitle: "Sweden",
+        value: "SE",
+      });
+    }
+  };
+
+  if (isLoading) return <LoadingSkeleton />;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="card bg-white shadow-xl mx-auto items-center w-full md:max-w-md lg:max-w-lg xl:max-w-xl">
       <div className="flex flex-col md:flex-row md:space-x-4">
@@ -146,6 +214,21 @@ const ReceiverCard = () => {
             >
               Rensa
             </button>
+          </div>
+
+          <div>
+            <p>Använd en kontakt från din adressbok</p>
+            <select
+              className="select select-bordered w-full"
+              onChange={handleSelectContact}
+            >
+              <option value="">Välj en kontakt</option>
+              {contacts.map((contact) => (
+                <option key={contact.id} value={contact.id}>
+                  {contact.companyName} - {contact.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-control mt-4">

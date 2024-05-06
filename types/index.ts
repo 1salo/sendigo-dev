@@ -42,6 +42,11 @@ export interface MyUser {
   image: string | null;
   firstName: string | null;
   lastName: string | null;
+  organizationNumber: string | null;
+  postalCode: string | null;
+  city: string | null;
+  country: string | null;
+  street: string | null;
 }
 
 // Assuming `token` has the same structure as `MyUser`

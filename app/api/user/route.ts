@@ -1,12 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
+import { sendVerificationEmail } from "@/app/_lib/mail"; 
 import * as z from "zod";
+import crypto from "crypto"; 
 
-// Define schema for input validation
 const userSchema = z.object({
-  // firstName: z.string().min(1, "Förnamn krävs").max(100),
-  // lastName: z.string().min(1, "Efternamn krävs").max(100),
   email: z.string().min(1, "Email krävs").email("Felaktig email"),
   password: z
     .string()
@@ -22,7 +21,7 @@ export async function POST(req: Request) {
     const { email, password } = userSchema.parse(body);
 
     const existingUserByEmail = await prisma.user.findUnique({
-      where: { email: email },
+      where: { email },
     });
     if (existingUserByEmail) {
       return NextResponse.json(
@@ -40,14 +39,28 @@ export async function POST(req: Request) {
       },
     });
 
+    // Generate a verification token
+    const verificationToken = crypto.randomBytes(20).toString("hex");
+    await prisma.verificationToken.create({
+      data: {
+        userId: newUser.id,
+        token: verificationToken,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+      },
+    });
+
+    // Send verification email
+    await sendVerificationEmail(email, verificationToken);
+
     return NextResponse.json(
       {
         email: newUser.email,
-        message: "User created succesfully",
+        message: "User created successfully. Verification email sent.",
       },
       { status: 201 }
     );
   } catch (error) {
+    console.error("Error in user registration:", error);
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }

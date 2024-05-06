@@ -99,6 +99,14 @@ const SignInForm = () => {
                 )}
               />
             </div>
+            <div className="my-5">
+              <Link
+                href="/forgot-password"
+                className="text-blue-800 hover:underline text-sm"
+              >
+                Glömt lösenord?
+              </Link>
+            </div>
             <Button
               className={`w-72 mx-auto block px-10 py-2 text-sm btn btn-primary rounded-full transition-transform duration-300 mt-4 ${
                 isLoading ? "relative" : ""
