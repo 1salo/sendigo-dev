@@ -18,6 +18,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if the user's email is verified
+    if (!user.emailVerified) {
+      return new NextResponse(
+        JSON.stringify({ message: "E-postadressen är inte verifierad." }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     const token = crypto.randomBytes(20).toString("hex");
     const hashedToken = createHash("sha256").update(token).digest("hex");
 

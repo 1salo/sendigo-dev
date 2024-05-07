@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 
 interface PackageOptionProps {
@@ -35,15 +36,15 @@ const PackageOption: React.FC<PackageOptionProps> = ({
 
   return (
     <div
-      className={`border p-4 flex flex-col items-center justify-center ${
-        isSelected ? "border-black" : ""
+      className={`border p-4 flex flex-col items-center justify-center rounded ${
+        isSelected ? "border-gray-500" : ""
       }`}
       onClick={onSelect}
       style={{ height: "180px" }}
     >
       <div className="mb-2 w-16 h-16  flex items-center justify-center">
         {imagePath && (
-          <img src={imagePath} alt={name} className="w-full h-full" />
+          <Image src={imagePath} alt={name} width={100} height={100} />
         )}
         {!imagePath && <span>{name.slice(0, 1)}</span>}
       </div>
@@ -126,7 +127,7 @@ const DashboardShippingPackageForm: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <PackageOption
             name="Paket"
-            imagePath="/images/parcel.png"
+            imagePath="/images/packageship.png"
             isSelected={selectedOption === "Paket"}
             onSelect={() => handleOptionSelect("Paket")}
             count={count}
@@ -135,7 +136,7 @@ const DashboardShippingPackageForm: React.FC = () => {
           />
           <PackageOption
             name="Pall"
-            imagePath="/images/pallet.png"
+            imagePath="/images/palletship.png"
             isSelected={selectedOption === "Pall"}
             onSelect={() => handleOptionSelect("Pall")}
             count={count}

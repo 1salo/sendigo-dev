@@ -1,5 +1,12 @@
-import LoadingSkeleton from "@/app/components/ui/LoadingSkeleton";
 import React, { useEffect, useState } from "react";
+import LoadingSkeleton from "@/app/components/ui/LoadingSkeleton";
+import { ShipmentDetails } from "@/types";
+import Image from "next/image";
+
+interface SummaryCardProps {
+  details: ShipmentDetails;
+  updateShipmentDetails: (details: ShipmentDetails) => void;
+}
 
 interface PackageOptionProps {
   name: string;
@@ -36,15 +43,15 @@ const PackageOption: React.FC<PackageOptionProps> = ({
 
   return (
     <div
-      className={`border p-4 flex flex-col items-center justify-center ${
-        isSelected ? "border-black" : ""
+      className={`border p-4 flex flex-col items-center justify-center rounded ${
+        isSelected ? "border-gray-500" : ""
       }`}
       onClick={onSelect}
       style={{ height: "180px" }}
     >
       <div className="mb-2 w-16 h-16  flex items-center justify-center">
         {imagePath && (
-          <img src={imagePath} alt={name} className="w-full h-full" />
+          <Image src={imagePath} alt={name} width={200} height={200} />
         )}
         {!imagePath && <span>{name.slice(0, 1)}</span>}
       </div>
@@ -72,9 +79,13 @@ const PackageOption: React.FC<PackageOptionProps> = ({
   );
 };
 
-const NewShipmentPackageForm: React.FC = () => {
-  const [selectedOption, setSelectedOption] = useState<string>("Paket"); // Initialize with "Paket"
-  const [isStackable, setIsStackable] = useState<string | null>(null);
+const NewShipmentPackageForm: React.FC<SummaryCardProps> = ({
+  details,
+  updateShipmentDetails,
+}) => {
+  const [selectedOption, setSelectedOption] = useState<string>("Paket");
+  const [isStackable, setIsStackable] = useState<boolean>(true);
+  const [description, setDescription] = useState("");
   const [dimensions, setDimensions] = useState({
     weight: "",
     length: "",
@@ -97,7 +108,7 @@ const NewShipmentPackageForm: React.FC = () => {
   const handleOptionSelect = (option: string) => {
     setSelectedOption(option);
     setCount(1);
-    setIsStackable(null);
+    setIsStackable(true);
   };
 
   const handleDecrement = () => {
@@ -106,6 +117,14 @@ const NewShipmentPackageForm: React.FC = () => {
 
   const handleIncrement = () => {
     setCount((prevCount) => prevCount + 1);
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDescription(e.target.value);
+    updateShipmentDetails({
+      ...details,
+      description: e.target.value,
+    });
   };
 
   let note = "";
@@ -123,14 +142,28 @@ const NewShipmentPackageForm: React.FC = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+      updateShipmentDetails({
+        packageType: selectedOption,
+        dimensions,
+        description,
+        count,
+        isStackable: isStackable === true, // Convert null to boolean
+      });
+    }, 0); // Adjust the timeout as needed
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [
+    selectedOption,
+    dimensions,
+    description,
+    count,
+    isStackable,
+    updateShipmentDetails,
+  ]);
 
   return (
-    <div className="card max-w-lg mx-auto my-4">
-      {isLoading ? ( // Render loading skeleton if isLoading is true
+    <div className="card max-w-lg mx-auto my-4 w-full">
+      {isLoading ? (
         <div className="w-full h-screen">
           <LoadingSkeleton />
         </div>
@@ -141,7 +174,7 @@ const NewShipmentPackageForm: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <PackageOption
               name="Paket"
-              imagePath="/images/parcel.png"
+              imagePath="/images/packageship.png"
               isSelected={selectedOption === "Paket"}
               onSelect={() => handleOptionSelect("Paket")}
               count={count}
@@ -150,7 +183,7 @@ const NewShipmentPackageForm: React.FC = () => {
             />
             <PackageOption
               name="Pall"
-              imagePath="/images/pallet.png"
+              imagePath="/images/palletship.png"
               isSelected={selectedOption === "Pall"}
               onSelect={() => handleOptionSelect("Pall")}
               count={count}
@@ -181,7 +214,6 @@ const NewShipmentPackageForm: React.FC = () => {
                 className="input input-bordered w-full pl-4 pr-12"
                 value={dimensions.weight}
                 onChange={(e) => {
-                  // Ensure only numeric input
                   const value = e.target.value;
                   if (value === "" || /^[0-9\b]+$/.test(value)) {
                     handleDimensionChange("weight", value);
@@ -288,9 +320,8 @@ const NewShipmentPackageForm: React.FC = () => {
                     name="stackable"
                     className="radio checked:bg-black"
                     value="ja"
-                    checked={isStackable === "ja"}
-                    onChange={() => setIsStackable("ja")}
-                    // Checked state should be dynamically set based on state or form library
+                    checked={isStackable === true}
+                    onChange={() => setIsStackable(true)}
                   />
                   <span className="ml-2">Ja</span>
                 </label>
@@ -300,9 +331,8 @@ const NewShipmentPackageForm: React.FC = () => {
                     name="stackable"
                     className="radio checked:bg-black"
                     value="nej"
-                    checked={isStackable === "nej"}
-                    onChange={() => setIsStackable("nej")}
-                    // Checked state should be dynamically set based on state or form library
+                    checked={isStackable === false}
+                    onChange={() => setIsStackable(false)}
                   />
                   <span className="ml-2">Nej</span>
                 </label>
@@ -315,7 +345,13 @@ const NewShipmentPackageForm: React.FC = () => {
           </div>
           <div className="flex flex-col mb-4 md:mb-0">
             <span className="label-text">Beskrivning (Innehåll)</span>
-            <input type="text" className="input input-bordered w-full" />
+            <input
+              type="text"
+              className="input input-bordered w-full"
+              value={description}
+              onChange={handleDescriptionChange}
+              maxLength={30}
+            />
           </div>
         </div>
       )}

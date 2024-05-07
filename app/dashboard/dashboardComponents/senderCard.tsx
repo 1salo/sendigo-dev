@@ -54,6 +54,38 @@ const SenderCard = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const lastUserInput = useRef("");
 
+  const useHomeAddress = () => {
+    if (session?.user) {
+      const {
+        street,
+        postalCode,
+        city,
+        country,
+        companyName,
+        email,
+        name,
+        phonenumber,
+      } = session.user;
+      setCompanyName(companyName || "");
+      setPhoneNumber(phonenumber || "");
+      setContactName(name || "");
+      setEmail(email || "");
+      setAddress(street || "");
+      setPostcode(postalCode || "");
+      setCity(city || "");
+      const foundCountry = COUNTRIES.find((c) => c.engTitle === country);
+      if (foundCountry) {
+        setCountry(foundCountry);
+      } else {
+        setCountry({
+          title: "Sverige",
+          engTitle: "Sweden",
+          value: "SE",
+        });
+      }
+    }
+  };
+
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
   };
@@ -212,7 +244,7 @@ const SenderCard = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="card bg-white shadow-xl mx-auto items-center w-full md:max-w-md lg:max-w-lg xl:max-w-xl">
+    <div className="card bg-white shadow-xl mx-auto max-w-lg w-full">
       <div className="flex flex-col md:flex-row md:space-x-4">
         <div className="card-body">
           <div className="flex flex-row justify-between mb-4 items-center ">
@@ -224,22 +256,10 @@ const SenderCard = () => {
               Rensa
             </button>
           </div>
-          <div>
-            <p>Använd en kontakt från din adressbok</p>
-            <select
-              className="select select-bordered w-full"
-              value={selectedContact}
-              onChange={handleSelectContact}
-            >
-              <option value="">{selectedContact}</option>
-              {contacts.map((contact) => (
-                <option key={contact.id} value={contact.id}>
-                  {contact.companyName} - {contact.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button className="btn btn-primary btn-sm w-44 font-mono font-thin mb-2">
+          <button
+            className="btn btn-primary btn-sm w-44 font-mono font-thin mb-2"
+            onClick={useHomeAddress}
+          >
             Använd hemadress
           </button>
 

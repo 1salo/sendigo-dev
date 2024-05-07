@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="lofi">
       <body
-        className={`${inter.className} flex flex-col min-h-screen bg-gray-100`}
+        className={`${inter.className} flex flex-col min-h-screen bg-slate-50`}
       >
         <AuthProvider>
           <main className="flex flex-col flex-1">{children}</main>

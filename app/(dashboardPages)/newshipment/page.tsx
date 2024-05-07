@@ -6,38 +6,78 @@ import NewShipmentPackageForm from "@/app/dashboard/dashboardComponents/newshipm
 import ReceiverCard from "@/app/dashboard/dashboardComponents/receiverCard";
 import SenderCard from "@/app/dashboard/dashboardComponents/senderCard";
 import SummaryCard from "@/app/dashboard/dashboardComponents/summaryCard";
-import { useState } from "react";
+import Timeline from "@/app/dashboard/dashboardComponents/Timeline";
+import { useState, useEffect } from "react";
+import { ShipmentDetails } from "@/types";
 
 const NewShipmentPage = () => {
+  const [activeStep, setActiveStep] = useState<number>(1);
+  const [shipmentDetails, setShipmentDetails] = useState({
+    packageType: "",
+    dimensions: { weight: "", length: "", width: "", height: "" },
+    description: "",
+    count: 0,
+  });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const packageTop = document
+        .getElementById("package-form")
+        ?.getBoundingClientRect().top;
+      const senderTop = document
+        .getElementById("sender-card")
+        ?.getBoundingClientRect().top;
+      const receiverTop = document
+        .getElementById("receiver-card")
+        ?.getBoundingClientRect().top;
+
+      if (receiverTop && receiverTop <= 150) setActiveStep(3);
+      else if (senderTop && senderTop <= 180) setActiveStep(2);
+      else if (packageTop && packageTop <= 180) setActiveStep(1);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleUpdateShipmentDetails = (details: ShipmentDetails) => {
+    setShipmentDetails((prev) => ({ ...prev, ...details }));
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <DashboardNavBar />
 
-      <div className="px-4 py-4 flex flex-col lg:flex-row justify-center gap-4">
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 w-full lg:max-w-5xl xl:max-w-6xl ml-3 ">
-          <div className="flex-1">
+      <div className="flex-grow flex lg:flex-row px-4 py-4 lg:px-8 lg:py-6">
+        {/* Timeline fixed on the left side of the page */}
+        <div className="hidden lg:block lg:w-1/4 lg:fixed lg:left-0 lg:top-20 lg:h-full z-10">
+          <Timeline activeStep={activeStep} />
+        </div>
+
+        {/* Main content section, centered with appropriate margins */}
+        <div className="flex flex-col lg:ml-[25%] lg:w-2/3 items-center gap-4">
+          <div id="package-form">
+            <NewShipmentPackageForm
+              details={shipmentDetails}
+              updateShipmentDetails={handleUpdateShipmentDetails}
+            />
+          </div>
+          <div id="sender-card">
             <SenderCard />
           </div>
-
-          <div className="flex-1">
+          <div id="receiver-card">
             <ReceiverCard />
           </div>
         </div>
 
-        <div className="hidden lg:block lg:relative lg:right-4 lg:flex-1 lg:ml-7">
-          <div className="lg:sticky lg:top-16 lg:overflow-y-auto lg:max-h-screen shadow-lg">
-            <SummaryCard />
+        {/* Summary card on the right */}
+        <div className="hidden lg:flex lg:w-1/4 lg:ml-auto">
+          <div className="sticky top-28 overflow-y-auto max-h-screen">
+            <SummaryCard details={shipmentDetails} />
           </div>
         </div>
       </div>
 
-      <div className="w-full px-4 mt-4 lg:hidden">
-        <NewShipmentPackageForm />
-      </div>
-
-      <div className="hidden lg:block w-full lg:w-1/3 xl:w-2/5 px-4 mt-4">
-        <NewShipmentPackageForm />
-      </div>
       <DashboardStickyFooter buttonLabel="Lägg i sändningslistan" />
     </div>
   );

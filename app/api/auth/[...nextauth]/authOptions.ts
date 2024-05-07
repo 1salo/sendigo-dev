@@ -53,6 +53,7 @@ export const authOptions: NextAuthOptions = {
           city: user.city || null,
           country: user.country || null,
           street: user.street || null,
+          phonenumber: user.phonenumber || null,
         } as MyUser;
       },
     }),
@@ -79,6 +80,7 @@ export const authOptions: NextAuthOptions = {
         token.city = user.city || null;
         token.country = user.country || null;
         token.street = user.street || null;
+        token.phonenumber = user.phonenumber || null;
       }
       return token;
     },
@@ -98,6 +100,7 @@ export const authOptions: NextAuthOptions = {
           street: token.street as string | null,
           city: token.city as string | null,
           country: token.country as string | null,
+          phonenumber: token.phonenumber as string | null,
         };
       }
       // Include the JWT itself in the session for client-side use

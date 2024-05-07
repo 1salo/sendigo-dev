@@ -7,9 +7,11 @@ import { useState, ChangeEvent, FormEvent } from "react";
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState<string>("");
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Added state for error messages
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null); // Reset error message on new submission
     try {
       const response = await fetch("/api/password-forgot", {
         method: "POST",
@@ -22,11 +24,11 @@ const ForgotPasswordPage = () => {
         setIsSubmitted(true);
       } else {
         const data = await response.json();
-        alert(data.message);
+        setErrorMessage(data.message); // Update state with error message from the API
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Något gick fel, försök igen senare.");
+      setErrorMessage("Något gick fel, försök igen senare."); // Update state with generic error message
     }
   };
 
@@ -52,33 +54,34 @@ const ForgotPasswordPage = () => {
             <div>
               <form
                 onSubmit={handleSubmit}
-                className="bg-white shadow-md h-64 rounded-lg px-8 pt-6 pb-8 mb-4 flex justify-center flex-col"
+                className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 flex flex-col justify-center"
               >
-                <span className="ml-4 mb-2">Email</span>
-                <div className="mb-4 flex items-center justify-center">
+                <span className=" mb-2">Email</span>
+                <div className="mb-4">
                   <input
                     type="email"
                     value={email}
                     onChange={handleEmailChange}
                     required
                     autoComplete="username"
-                    className="input input-bordered min-w-80"
+                    className="input input-bordered w-full"
                   />
                 </div>
+                <div className="mb-4 text-red-500 text-center">
+                  {errorMessage}
+                </div>
                 <div className="flex items-center justify-center">
-                  <button className="btn btn-primary min-w-80" type="submit">
+                  <button className="btn btn-primary w-full" type="submit">
                     Skicka återställningslänk
                   </button>
                 </div>
               </form>
-              <div>
-                <Link
-                  href="/sign-in"
-                  className="text-blue-500 hover:underline flex justify-center"
-                >
-                  Tillbaka till inloggningssidan
-                </Link>
-              </div>
+              <Link
+                href="/sign-in"
+                className="text-blue-500 hover:underline flex justify-center"
+              >
+                Tillbaka till inloggningssidan
+              </Link>
             </div>
           ) : (
             <div className="text-center">

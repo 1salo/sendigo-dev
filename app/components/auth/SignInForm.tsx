@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormControl,
 } from "../ui/form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,19 +35,25 @@ const SignInForm = () => {
       password: "",
     },
   });
-
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
+    setLoginError(null); // Reset login error before a new attempt
     const signInData = await signIn("credentials", {
+      redirect: false,
       email: values.email,
       password: values.password,
-      redirect: false,
     });
+
     if (signInData?.error) {
       setIsLoading(false);
-      console.log(signInData.error);
+      if (signInData.error === "CredentialsSignin") {
+        setLoginError("Felaktig mail eller lösenord");
+      } else {
+        setLoginError(signInData.error);
+      }
     } else {
       router.push("/dashboard");
     }
@@ -70,13 +76,13 @@ const SignInForm = () => {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         placeholder="mail@example.com"
                         autoComplete="username"
                         className="focus:bg-transparent"
-                        {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500 mt-1" />
+                    <FormMessage className="text-red-500 mt-1 text-xs" />
                   </FormItem>
                 )}
               />
@@ -88,17 +94,21 @@ const SignInForm = () => {
                     <FormLabel>Lösenord</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         type="password"
                         placeholder="Lösenord"
                         autoComplete="current-password"
-                        {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500 mt-1" />
+                    <FormMessage className="text-red-500 mt-1 text-xs" />
                   </FormItem>
                 )}
               />
             </div>
+            {loginError && (
+              <div className="text-red-500 text-center my-2 text-xs">{loginError}</div>
+            )}{" "}
+            {/* Display login error */}
             <div className="my-5">
               <Link
                 href="/forgot-password"
@@ -108,10 +118,10 @@ const SignInForm = () => {
               </Link>
             </div>
             <Button
+              type="submit"
               className={`w-72 mx-auto block px-10 py-2 text-sm btn btn-primary rounded-full transition-transform duration-300 mt-4 ${
                 isLoading ? "relative" : ""
               }`}
-              type="submit"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -129,7 +139,7 @@ const SignInForm = () => {
           <p className="text-center text-sm text-gray-600">
             Om du inte har ett konto; &nbsp;
             <Link className="text-blue-500 hover:underline" href="/sign-up">
-              Skapa konto
+              Skapa konto nu
             </Link>
           </p>
         </Form>

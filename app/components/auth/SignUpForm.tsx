@@ -25,6 +25,12 @@ const FormSchema = z
       .min(1, "Lösenord krävs")
       .min(8, "Lösenordet måste bestå av mer än 8 tecken"),
     confirmPassword: z.string().min(1, "Lösenordsbekräftelse krävs"),
+    termsAccepted: z
+      .boolean()
+      .refine(
+        (val) => val,
+        "Godkänn användaravtalet, integritetspolicy och biträdesavtal"
+      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
@@ -39,6 +45,7 @@ const SignUpForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      termsAccepted: false,
     },
   });
 
@@ -96,7 +103,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500 mt-1">
+                    <FormMessage className="text-red-500 mt-1 text-xs">
                       {form.formState.errors.email?.message}
                     </FormMessage>
                   </FormItem>
@@ -115,7 +122,7 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500 mt-1" />
+                    <FormMessage className="text-red-500 mt-1 text-xs" />
                   </FormItem>
                 )}
               />
@@ -132,11 +139,31 @@ const SignUpForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-500 mt-1" />
+                    <FormMessage className="text-red-500 mt-1 text-xs" />
                   </FormItem>
                 )}
               />
             </div>
+
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input
+                  {...form.register("termsAccepted")}
+                  type="checkbox"
+                  className="checkbox"
+                />
+                <span className="label-text text-xs w-60 my-4">
+                  Jag godkänner Sendigos användaravtal, <br />
+                  integritetspolicy och biträdesavtal.
+                </span>
+              </label>
+              {form.formState.errors.termsAccepted && (
+                <p className="text-red-500 w-60 text-xs">
+                  {form.formState.errors.termsAccepted.message}
+                </p>
+              )}
+            </div>
+
             <Button
               className={`w-72 mx-auto block px-10 py-2 text-sm btn btn-primary rounded-full transition-transform duration-300 mt-4 ${
                 isLoading ? "relative" : ""

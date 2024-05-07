@@ -357,23 +357,28 @@ const ReceiverCard = () => {
             <div className="border-2 rounded py-4 px-4 border-gray-200">
               <div className="flex flex-col mb-4">
                 <span className="label-text">Telefon</span>
-                <input type="text" className="input input-bordered w-full" />
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  value={phoneNumber}
+                  onChange={handlePhoneNumberChange}
+                />
               </div>
               <div className="flex flex-col mb-4">
                 <span className="label-text">E-postadress</span>
-                <input type="text" className="input input-bordered w-full" />
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  value={email}
+                  onChange={handleEmailChange}
+                />
               </div>
             </div>
           )}
           <div className="form-control">
             <label className="label cursor-pointer">
               <span className="label-text">Spara mottagare i adressboken</span>
-              <input
-                type="checkbox"
-                className="toggle"
-                value={email}
-                onChange={handleEmailChange}
-              />
+              <input type="checkbox" className="toggle" />
             </label>
           </div>
         </div>

@@ -47,7 +47,21 @@ export interface MyUser {
   city: string | null;
   country: string | null;
   street: string | null;
+  phonenumber: string | null;
 }
 
 // Assuming `token` has the same structure as `MyUser`
 export type MyToken = MyUser;
+
+export interface ShipmentDetails {
+  packageType?: string;
+  dimensions?: {
+    weight: string;
+    length: string;
+    width: string;
+    height: string;
+  };
+  description?: string;
+  count?: number;
+  isStackable?: boolean; // Make it nullable
+}

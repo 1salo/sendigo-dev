@@ -12,11 +12,12 @@ declare module "next-auth" {
     city: string | null;
     country: string | null;
     street: string | null;
+    phonenumber: string | null;
   }
 
   interface Session {
     user: User;
-    accessToken?: string; // Include accessToken in the session object
+    accessToken?: string;
     token: {
       firstName: string | null;
       lastName: string | null;

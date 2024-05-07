@@ -45,6 +45,7 @@ model User {
   companyName        String?
   firstName          String?
   lastName           String?
+  phonenumber        String?
   email              String?             @unique
   emailVerified      DateTime?
   hashedPassword     String
