@@ -66,11 +66,11 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt: async ({ token, user }) => {
-      console.log("JWT callback - User:", user);
       if (user) {
+        // Uppdatera token med uppdaterade användaruppgifter
         token.id = user.id;
         token.email = user.email;
-        token.name = user.name;
+        token.name = `${user.firstName} ${user.lastName}`;
         token.image = user.image || null;
         token.companyName = user.companyName || null;
         token.firstName = user.firstName || null;
@@ -86,6 +86,7 @@ export const authOptions: NextAuthOptions = {
     },
     session: async ({ session, token }) => {
       if (token) {
+        // Uppdatera sessionen med de uppdaterade användaruppgifterna
         session.user = {
           ...session.user,
           id: token.id as string,
@@ -103,8 +104,7 @@ export const authOptions: NextAuthOptions = {
           phonenumber: token.phonenumber as string | null,
         };
       }
-      // Include the JWT itself in the session for client-side use
-      session.accessToken = JSON.stringify(token); // Convert token object to string
+      session.accessToken = JSON.stringify(token); // Inkludera JWT i sessionen för klientanvändning
       return session;
     },
   },

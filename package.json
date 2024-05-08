@@ -19,6 +19,7 @@
     "@radix-ui/themes": "^3.0.2",
     "@react-google-maps/api": "^2.19.3",
     "autoprefixer": "10.4.17",
+    "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "eslint": "8.57.0",

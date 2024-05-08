@@ -2,11 +2,11 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { COUNTRIES } from "@/app/_lib/countries";
 
-const MyProfile = () => {
+const MyProfileCompany = () => {
   const { data: session } = useSession();
 
   if (!session) {
-    return <div>Loading...</div>;
+    return <span className="loading loading-dots loading-lg"></span>;
   }
 
   const userCountry = COUNTRIES.find(
@@ -15,58 +15,59 @@ const MyProfile = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <label>
-        Företagsnamn:
+      <h1 className="mb-4 mt-20 font-medium">Företagsinfo</h1>
+      <label className="flex-col flex w-72">
+        <span>Företagsnamn</span>
         <input
           type="text"
           name="companyName"
-          className="input input-bordered focus:outline-none"
+          className="input input-bordered focus:outline-none bg-gray-100 mt-2"
           value={session.user.companyName || ""}
           readOnly
         />
       </label>
-      <label>
-        Organisationsnummer:
+      <label className="flex-col flex w-72">
+        <span>Organisationsnummer</span>
         <input
           type="text"
           name="organizationNumber"
-          className="input input-bordered focus:outline-none"
+          className="input input-bordered focus:outline-none bg-gray-100 mt-2"
           value={session.user.organizationNumber || ""}
           readOnly
         />
       </label>
-      <label>
-        Adress:
+      <label className="flex-col flex w-72">
+        <span>Adress</span>
         <input
           type="text"
           name="address"
-          className="input input-bordered focus:outline-none"
+          className="input input-bordered focus:outline-none bg-gray-100 mt-2"
           value={session.user.street || ""}
           readOnly
         />
       </label>
-      <label>
-        Stad:
+      <label className="flex-col flex w-72">
+        <span>Stad</span>
         <input
           type="text"
           name="city"
-          className="input input-bordered focus:outline-none"
+          className="input input-bordered focus:outline-none bg-gray-100 mt-2"
           value={session.user.city || ""}
           readOnly
         />
       </label>
-      <label>
-        Postnummer:
+      <label className="flex-col flex w-72">
+        <span>Postnummer</span>
         <input
           type="text"
           name="postalCode"
-          className="input input-bordered focus:outline-none"
+          className="input input-bordered focus:outline-none bg-gray-100 mt-2"
           value={session.user.postalCode || ""}
           readOnly
         />
       </label>
-      <span>Land:</span>
-      <div className="flex items-center gap-2 input input-bordered w-52 focus:outline-none">
+      <span>Land</span>
+      <div className="flex items-center gap-2 input input-bordered w-72 focus:outline-none bg-gray-100">
         {userCountry && (
           <>
             <img
@@ -82,4 +83,4 @@ const MyProfile = () => {
   );
 };
 
-export default MyProfile;
+export default MyProfileCompany;

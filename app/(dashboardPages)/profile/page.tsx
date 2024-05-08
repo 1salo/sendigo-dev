@@ -1,19 +1,37 @@
 "use client";
 
 import DashboardNavBar from "@/app/dashboard/dashboardComponents/DashboardNavBar";
-import MyProfile from "@/app/dashboard/dashboardComponents/MyProfile";
-import { useSession } from "next-auth/react";
+import EditPassword from "@/app/dashboard/dashboardComponents/EditPassword";
+import MyProfileCompany from "@/app/dashboard/dashboardComponents/MyProfileCompany";
+import MyProfileUser from "@/app/dashboard/dashboardComponents/MyProfileUser";
+import Image from "next/image";
 import React from "react";
 
 const ProfilePage = () => {
-  const { data: session } = useSession();
   return (
-    <div>
+    <div className="h-screen bg-white">
       <DashboardNavBar />
-      <h1 className="mb-4 font-medium">
-        Mina sidor {session?.user.companyName}
-      </h1>
-      <MyProfile />
+      <div className="flex px-10">
+        <div className="flex flex-col w-1/2 border-r border-gray-300">
+          <MyProfileUser />
+          <div className="mt-8">
+            <EditPassword />
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div className="w-1/2 ml-4 pl-6">
+            <MyProfileCompany />
+          </div>
+          <div className="mr-10">
+            <Image
+              src="/images/diliverytruck.gif"
+              alt={"Shipping"}
+              width={500}
+              height={500}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
