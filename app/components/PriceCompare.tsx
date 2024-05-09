@@ -141,7 +141,7 @@ const PriceCompare = () => {
   return (
     <div className="sendigo-four-color h-auto flex flex-row items-start justify-center p-8 gap-4">
       <div className="flex-1">
-        <h1 className="text-4xl font-normal mb-6">
+        <h1 className="text-4xl font-medium mb-6">
           Hitta rätt prisplan för dig
         </h1>
         <div className="flex items-center mb-4">

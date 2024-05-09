@@ -10,8 +10,6 @@ import { authOptions } from "./api/auth/[...nextauth]/authOptions";
 import PriceCompare from "./components/PriceCompare";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-
   return (
     <>
       <MainLayout>
