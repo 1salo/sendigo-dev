@@ -13,6 +13,7 @@ declare module "next-auth" {
     country: string | null;
     street: string | null;
     phonenumber: string | null;
+    hasCompletedInitialSetup: boolean;
   }
 
   interface Session {

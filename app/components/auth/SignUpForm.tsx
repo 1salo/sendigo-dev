@@ -25,6 +25,8 @@ const FormSchema = z
       .min(1, "Lösenord krävs")
       .min(8, "Lösenordet måste bestå av mer än 8 tecken"),
     confirmPassword: z.string().min(1, "Lösenordsbekräftelse krävs"),
+    companyName: z.string().min(1, "Företagsnamn krävs"),
+    phonenumber: z.string().min(1, "Företagstelefon krävs"),
     termsAccepted: z
       .boolean()
       .refine(
@@ -45,6 +47,8 @@ const SignUpForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      companyName: "",
+      phonenumber: "",
       termsAccepted: false,
     },
   });
@@ -58,10 +62,7 @@ const SignUpForm = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email: values.email,
-        password: values.password,
-      }),
+      body: JSON.stringify(values),
     });
 
     if (response.ok) {
@@ -90,6 +91,36 @@ const SignUpForm = () => {
             className="bg-white shadow-md rounded-lg px-4 pt-6 pb-10 mb-4"
           >
             <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="companyName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Företagsnamn</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Företag AB" {...field} />
+                    </FormControl>
+                    <FormMessage className="text-red-500 mt-1 text-xs">
+                      {form.formState.errors.companyName?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phonenumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Företagstelefon</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+46123456789" {...field} />
+                    </FormControl>
+                    <FormMessage className="text-red-500 mt-1 text-xs">
+                      {form.formState.errors.phonenumber?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -153,8 +184,28 @@ const SignUpForm = () => {
                   className="checkbox"
                 />
                 <span className="label-text text-xs w-60 my-4">
-                  Jag godkänner Sendigos användaravtal, <br />
-                  integritetspolicy och biträdesavtal.
+                  Jag godkänner Sendigos{" "}
+                  <Link
+                    href="/anvandaravtal"
+                    className="text-blue-500 hover:underline"
+                  >
+                    användaravtal,
+                  </Link>
+                  <br />
+                  <Link
+                    href="/integritetspolicy"
+                    className="text-blue-500 hover:underline"
+                  >
+                    integritetspolicy
+                  </Link>{" "}
+                  och{" "}
+                  <Link
+                    href="/bitradesavtal"
+                    className="text-blue-500 hover:underline"
+                  >
+                    biträdesavtal
+                  </Link>
+                  .
                 </span>
               </label>
               {form.formState.errors.termsAccepted && (

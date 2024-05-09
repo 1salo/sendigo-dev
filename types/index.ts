@@ -48,6 +48,7 @@ export interface MyUser {
   country: string | null;
   street: string | null;
   phonenumber: string | null;
+  hasCompletedInitialSetup: boolean;
 }
 
 // Assuming `token` has the same structure as `MyUser`

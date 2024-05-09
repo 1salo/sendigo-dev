@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import { compare } from "bcrypt";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { MyUser } from "@/types";
+import { MyUser } from "@/types"; // Ensure this type is correctly defined as needed
 
 const prisma = new PrismaClient();
 
@@ -17,7 +17,10 @@ export const authOptions: NextAuthOptions = {
           type: "email",
           placeholder: "your-email@example.com",
         },
-        password: { label: "Password", type: "password" },
+        password: {
+          label: "Password",
+          type: "password",
+        },
       },
       authorize: async (credentials) => {
         if (!credentials || !credentials.email || !credentials.password) {
@@ -26,6 +29,22 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            image: true,
+            companyName: true,
+            organizationNumber: true,
+            postalCode: true,
+            city: true,
+            country: true,
+            street: true,
+            phonenumber: true,
+            hashedPassword: true,
+            hasCompletedInitialSetup: true,
+          },
         });
 
         if (!user || !user.hashedPassword) {
@@ -40,20 +59,22 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // Construct MyUser type object from user data
         return {
           id: user.id,
           name: `${user.firstName} ${user.lastName}`,
           email: user.email,
-          image: user.image || null,
-          companyName: user.companyName || null,
-          firstName: user.firstName || null,
-          lastName: user.lastName || null,
-          organizationNumber: user.organizationNumber || null,
-          postalCode: user.postalCode || null,
-          city: user.city || null,
-          country: user.country || null,
-          street: user.street || null,
-          phonenumber: user.phonenumber || null,
+          image: user.image,
+          companyName: user.companyName,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          organizationNumber: user.organizationNumber,
+          postalCode: user.postalCode,
+          city: user.city,
+          country: user.country,
+          street: user.street,
+          phonenumber: user.phonenumber,
+          hasCompletedInitialSetup: user.hasCompletedInitialSetup,
         } as MyUser;
       },
     }),
@@ -67,44 +88,32 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        // Uppdatera token med uppdaterade användaruppgifter
-        token.id = user.id;
-        token.email = user.email;
-        token.name = `${user.firstName} ${user.lastName}`;
-        token.image = user.image || null;
-        token.companyName = user.companyName || null;
-        token.firstName = user.firstName || null;
-        token.lastName = user.lastName || null;
-        token.organizationNumber = user.organizationNumber || null;
-        token.postalCode = user.postalCode || null;
-        token.city = user.city || null;
-        token.country = user.country || null;
-        token.street = user.street || null;
-        token.phonenumber = user.phonenumber || null;
+        // Assign user properties to token
+        Object.assign(token, {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          companyName: user.companyName,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          organizationNumber: user.organizationNumber,
+          postalCode: user.postalCode,
+          city: user.city,
+          country: user.country,
+          street: user.street,
+          phonenumber: user.phonenumber,
+          hasCompletedInitialSetup: user.hasCompletedInitialSetup,
+        });
       }
       return token;
     },
     session: async ({ session, token }) => {
-      if (token) {
-        // Uppdatera sessionen med de uppdaterade användaruppgifterna
-        session.user = {
-          ...session.user,
-          id: token.id as string,
-          email: token.email as string,
-          name: token.name as string,
-          image: token.image as string | null,
-          companyName: token.companyName as string | null,
-          firstName: token.firstName as string | null,
-          lastName: token.lastName as string | null,
-          organizationNumber: token.organizationNumber as string | null,
-          postalCode: token.postalCode as string | null,
-          street: token.street as string | null,
-          city: token.city as string | null,
-          country: token.country as string | null,
-          phonenumber: token.phonenumber as string | null,
-        };
-      }
-      session.accessToken = JSON.stringify(token); // Inkludera JWT i sessionen för klientanvändning
+      session.user = {
+        ...session.user,
+        ...token,
+      };
+      session.accessToken = JSON.stringify(token);
       return session;
     },
   },

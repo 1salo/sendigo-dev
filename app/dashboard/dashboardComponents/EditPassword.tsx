@@ -103,7 +103,7 @@ const EditPassword = () => {
         <div className="alert alert-success w-72 mt-2">{successMessage}</div>
       )}
       <button
-        className="btn btn-primary mt-4 w-72"
+        className="btn btn-primary mt-4 w-72 mb-4"
         onClick={handleUpdatePassword}
       >
         Uppdatera lösenord

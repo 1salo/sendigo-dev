@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
-import { sendVerificationEmail } from "@/app/_lib/mail"; 
+import { sendVerificationEmail } from "@/app/_lib/mail";
 import * as z from "zod";
-import crypto from "crypto"; 
+import crypto from "crypto";
 
 const userSchema = z.object({
   email: z.string().min(1, "Email krävs").email("Felaktig email"),
@@ -11,6 +11,8 @@ const userSchema = z.object({
     .string()
     .min(1, "Lösenord krävs")
     .min(8, "Lösenordet måste bestå av minst än 8 tecken"),
+  companyName: z.string().min(1, "Företagsnamn krävs"),
+  phonenumber: z.string().min(1, "Företagstelefon krävs"),
 });
 
 const prisma = new PrismaClient();
@@ -18,7 +20,8 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password } = userSchema.parse(body);
+    const { email, password, companyName, phonenumber } =
+      userSchema.parse(body);
 
     const existingUserByEmail = await prisma.user.findUnique({
       where: { email },
@@ -36,6 +39,8 @@ export async function POST(req: Request) {
       data: {
         email,
         hashedPassword,
+        companyName,
+        phonenumber,
       },
     });
 

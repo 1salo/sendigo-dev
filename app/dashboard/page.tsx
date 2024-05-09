@@ -1,15 +1,55 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import DashboardDrawer from "./dashboardComponents/DashboardDrawer";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import InitialSetupForm from "../components/auth/InitialSetupForm";
 import DashboardNavBar from "./dashboardComponents/DashboardNavBar";
+import DashboardDrawer from "./dashboardComponents/DashboardDrawer";
 import DashboardShippingPackageForm from "./dashboardComponents/DashboardShippingPackageForm";
 import DashboardShippingZipForm from "./dashboardComponents/DashboardShippingZipForm";
 import DashboardStickyFooter from "./dashboardComponents/DashboardStickyFooter";
 
-const Page = () => {
+const DashboardPage = () => {
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSetupForm, setShowSetupForm] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/initialSetup");
+        if (response.ok) {
+          const userData = await response.json();
+          setShowSetupForm(!userData.hasCompletedInitialSetup);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    if (session) {
+      fetchUserData();
+    }
+  }, [session, router]);
+
+  const handleInitialSetupSubmit = async (data: any) => {
+    setIsLoading(true);
+    const response = await fetch("/api/initialSetup", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    setIsLoading(false);
+    if (response.ok) {
+      setShowSetupForm(false);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <DashboardNavBar />
+      {!showSetupForm && <DashboardNavBar />}
       <div className="flex-grow">
         <div className="flex flex-col md:flex-row p-4 md:p-8">
           <div className="w-full md:w-1/4 xl:w-1/5">
@@ -21,14 +61,25 @@ const Page = () => {
               <div className="my-4"></div>
               <DashboardShippingPackageForm />
               <div className="my-4"></div>
-              <DashboardStickyFooter buttonLabel="Beräkna pris" />
+              {!showSetupForm && (
+                <DashboardStickyFooter buttonLabel="Beräkna pris" />
+              )}
               <div className="my-4"></div>
             </div>
           </div>
         </div>
       </div>
+      {showSetupForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center w-screen">
+          <InitialSetupForm
+            onSubmit={handleInitialSetupSubmit}
+            isLoading={isLoading}
+            onClose={() => setShowSetupForm(false)}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
-export default Page;
+export default DashboardPage;

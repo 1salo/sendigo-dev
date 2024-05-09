@@ -358,13 +358,6 @@ const SenderCard = () => {
               />
             </div>
           </div>
-
-          <div className="form-control">
-            <label className="label cursor-pointer">
-              <span className="label-text">Spara mottagare i adressboken</span>
-              <input type="checkbox" className="toggle" />
-            </label>
-          </div>
         </div>
       </div>
     </div>

@@ -22,14 +22,14 @@ const ProfilePage = () => {
           <div className="w-1/2 ml-4 pl-6">
             <MyProfileCompany />
           </div>
-          <div className="mr-10">
+          {/* <div className="mr-10">
             <Image
               src="/images/diliverytruck.gif"
               alt={"Shipping"}
               width={500}
               height={500}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

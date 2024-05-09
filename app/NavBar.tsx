@@ -65,11 +65,11 @@ const NavBar = () => {
         <div className="flex items-center space-x-4">
           <Link
             href="/sign-up"
-            className="btn btn-primary rounded-full transition-transform duration-300 hover:scale-105"
+            className="btn btn-primary transition-transform duration-300 hover:scale-105"
           >
             Kom igång
           </Link>
-          <Link href="/sign-in" className="btn btn-outline rounded-full">
+          <Link href="/sign-in" className="btn btn-outline">
             Logga in
           </Link>
         </div>

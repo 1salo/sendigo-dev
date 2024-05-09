@@ -53,6 +53,7 @@ const ReceiverCard = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isPrivatePerson, setIsPrivatePerson] = useState(true);
   const lastUserInput = useRef("");
+  const [saveInAddressBook, setSaveInAddressBook] = useState(false);
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
@@ -80,6 +81,48 @@ const ReceiverCard = () => {
 
   const handleCompanyNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCompanyName(e.target.value);
+  };
+
+  const handleSaveInAddressBookChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSaveInAddressBook(e.target.checked);
+    if (e.target.checked) {
+      await saveContact();
+    }
+  };
+
+  const saveContact = async () => {
+    const contactData = {
+      companyName,
+      name: contactName,
+      street: address,
+      postalcode: postcode,
+      city,
+      country: country.engTitle,
+      email,
+      phone: phoneNumber,
+    };
+
+    try {
+      const response = await fetch("/api/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+        body: JSON.stringify(contactData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save contact");
+      }
+
+      const data = await response.json();
+      console.log("Contact saved:", data);
+    } catch (error) {
+      console.error("Error saving contact:", error);
+    }
   };
 
   const handleSuggestionClick = (suggestion: Prediction) => {
@@ -378,7 +421,12 @@ const ReceiverCard = () => {
           <div className="form-control">
             <label className="label cursor-pointer">
               <span className="label-text">Spara mottagare i adressboken</span>
-              <input type="checkbox" className="toggle" />
+              <input
+                type="checkbox"
+                className="toggle"
+                checked={saveInAddressBook}
+                onChange={handleSaveInAddressBookChange}
+              />
             </label>
           </div>
         </div>
