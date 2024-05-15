@@ -41,6 +41,7 @@ export async function POST(req: Request) {
         hashedPassword,
         companyName,
         phonenumber,
+        subscriptionPlanId: 1,
       },
     });
 

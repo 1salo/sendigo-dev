@@ -1,0 +1,14 @@
+@keyframes foldAndFly {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(0.8) rotateX(90deg);
+    opacity: 0.7;
+  }
+}
+
+.foldAndFly {
+  animation: foldAndFly 2s forwards;
+}

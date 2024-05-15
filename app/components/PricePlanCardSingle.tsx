@@ -27,12 +27,10 @@ const PricePlanCardSingle = ({
         className="relative mx-auto my-4"
         style={{ minWidth: "400px", maxWidth: "500px" }}
       >
-        {/* Recommendation Banner */}
         <div className="absolute -top-4 left-0 right-0 mx-auto py-1 bg-green-100 px-6 rounded-full w-60 animate-bounce shadow-md">
           <h2 className="text-lg font-medium text-black">VI REKOMMENDERAR</h2>
         </div>
 
-        {/* Card */}
         <div className="rounded-3xl overflow-hidden shadow-2xl bg-white text-center p-6 flex flex-col mt-6 border">
           <div className="font-bold text-4xl mb-2">{title}</div>
           <p className="text-base mb-2">{desc}</p>

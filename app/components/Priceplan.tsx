@@ -40,7 +40,7 @@ const Priceplan = () => {
         "Dedikerad fraktexpert",
       ],
       buttonLabel: "Kontakt Sälj",
-      buttonLink: "mailto:sendigo@example.com",
+      buttonLink: "mailto:sales@sendigo.se",
       onButtonClick: () => console.log("Plus Plan selected"),
     },
   ];

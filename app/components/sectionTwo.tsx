@@ -54,7 +54,7 @@ const SectionTwo = () => {
         <div className="w-3/4 ml-10">
           <h1 className="text-5xl font-medium">Varför Sendigo?</h1>
           <p className="text-2xl text-gray-600 mt-4">
-            Välj Sendigo för en frakttjänst med en familjär känsla, grundad i
+            Välj Sendigo för en frakttjänst med en familjär känsla, grundat i
             Småland av far och son. <br />
             Vi strävar efter att göra frakt krångelfritt, snabbt och enkelt. Med
             Sendigo får du kostnadseffektiva lösningar, möjlighet att jämföra

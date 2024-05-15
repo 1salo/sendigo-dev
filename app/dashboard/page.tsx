@@ -5,34 +5,49 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import InitialSetupForm from "../components/auth/InitialSetupForm";
 import DashboardNavBar from "./dashboardComponents/DashboardNavBar";
-import DashboardDrawer from "./dashboardComponents/DashboardDrawer";
 import DashboardShippingPackageForm from "./dashboardComponents/DashboardShippingPackageForm";
 import DashboardShippingZipForm from "./dashboardComponents/DashboardShippingZipForm";
 import DashboardStickyFooter from "./dashboardComponents/DashboardStickyFooter";
+import styles from "../components/ui/animation.module.css";
+
+interface ShippingData {
+  fromZip: string;
+  toZip: string;
+  fromCountry: string;
+  toCountry: string;
+  weight: string;
+  dimensions: {
+    length: string;
+    width: string;
+    height: string;
+  };
+  stackable: boolean;
+}
 
 const DashboardPage = () => {
   const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSetupForm, setShowSetupForm] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showSetupForm, setShowSetupForm] = useState<boolean>(false);
+  const [animate, setAnimate] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("/api/initialSetup");
-        if (response.ok) {
-          const userData = await response.json();
-          setShowSetupForm(!userData.hasCompletedInitialSetup);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
     if (session) {
       fetchUserData();
     }
   }, [session, router]);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch("/api/initialSetup");
+      if (response.ok) {
+        const userData = await response.json();
+        setShowSetupForm(!userData.hasCompletedInitialSetup);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const handleInitialSetupSubmit = async (data: any) => {
     setIsLoading(true);
@@ -47,30 +62,62 @@ const DashboardPage = () => {
     }
   };
 
+  const [shippingData, setShippingData] = useState<ShippingData>({
+    fromZip: "",
+    toZip: "",
+    fromCountry: "SE",
+    toCountry: "SE",
+    weight: "",
+    dimensions: {
+      length: "",
+      width: "",
+      height: "",
+    },
+    stackable: false,
+  });
+
+  const handleUpdateShippingData = (data: Partial<ShippingData>) => {
+    setShippingData((prev) => ({ ...prev, ...data }));
+  };
+
+  const calculateShippingPrice = () => {
+    setAnimate(true);
+    setTimeout(() => {
+      console.log("Shipping Data for Price Calculation:", shippingData);
+      setAnimate(false);
+    }, 2000);
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white relative">
       {!showSetupForm && <DashboardNavBar />}
-      <div className="flex-grow">
-        <div className="flex flex-col md:flex-row p-4 md:p-8">
-          <div className="w-full md:w-1/4 xl:w-1/5">
-            <DashboardDrawer />
-          </div>
-          <div className="flex flex-col w-full md:w-3/4 xl:w-4/5">
-            <div className="ml-auto mr-0 md:mr-4 lg:mr-8 xl:mr-16 max-w-4xl">
-              <DashboardShippingZipForm />
-              <div className="my-4"></div>
-              <DashboardShippingPackageForm />
-              <div className="my-4"></div>
+      <div
+        className={`content-wrapper ${showSetupForm ? "blur-background" : ""}`}
+      >
+        <div className="flex-grow">
+          <div className="flex flex-col md:flex-row p-4 md:p-8">
+            <div className="flex-grow">
+              <DashboardShippingZipForm
+                updateShippingData={handleUpdateShippingData}
+                animationClass={animate ? styles.foldAndFly : ""}
+              />
+              <DashboardShippingPackageForm
+                updateShippingData={handleUpdateShippingData}
+                animationClass={animate ? styles.foldAndFly : ""}
+              />
               {!showSetupForm && (
-                <DashboardStickyFooter buttonLabel="Beräkna pris" />
+                <DashboardStickyFooter
+                  buttonLabel="Beräkna pris"
+                  onSubmit={calculateShippingPrice}
+                  animationTrigger={() => setAnimate(true)}
+                />
               )}
-              <div className="my-4"></div>
             </div>
           </div>
         </div>
       </div>
       {showSetupForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center w-screen">
+        <div className="absolute top-0 left-0 right-0 bottom-0 z-30">
           <InitialSetupForm
             onSubmit={handleInitialSetupSubmit}
             isLoading={isLoading}

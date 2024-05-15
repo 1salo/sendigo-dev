@@ -61,7 +61,7 @@ const plans: Plan[] = [
       "Support via telefon, chatt & mail",
     ],
     buttonLabel: "Kontakta sälj",
-    buttonLink: "mailto:sendigo@example.com",
+    buttonLink: "mailto:sales@sendigo.se",
     onButtonClick: () => console.log("Pro Plan selected"),
   },
 ];

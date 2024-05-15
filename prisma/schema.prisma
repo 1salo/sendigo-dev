@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -58,6 +55,8 @@ model User {
   postalCode               String?
   country                  String?
   hasCompletedInitialSetup Boolean             @default(false)
+  subscriptionPlanId       Int?
+  subscriptionPlan         SubscriptionPlan?   @relation(fields: [subscriptionPlanId], references: [id])
   accounts                 Account[]
   sessions                 Session[]
   contacts                 Contact[]
@@ -159,4 +158,12 @@ model ResetToken {
   user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
+}
+
+model SubscriptionPlan {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float?
+  users       User[]
 }

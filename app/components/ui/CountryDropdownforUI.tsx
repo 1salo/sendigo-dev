@@ -1,16 +1,18 @@
-import React, { useState, useRef, useEffect } from "react";
 import { COUNTRIES } from "@/app/_lib/countries";
-import { IoMdArrowDropup } from "react-icons/io";
-import { IoMdArrowDropdown } from "react-icons/io";
+import { useEffect, useRef, useState } from "react";
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 
 interface Country {
   title: string;
   value: string;
 }
 
-const CountryDropdownForUI = () => {
-  const defaultCountry: Country = { title: "Sverige", value: "SE" };
+interface CountryDropdownForUIProps {
+  onChange: (value: string) => void;
+}
 
+const CountryDropdownForUI = ({ onChange }: CountryDropdownForUIProps) => {
+  const defaultCountry: Country = { title: "Sverige", value: "SE" };
   const [selectedCountry, setSelectedCountry] =
     useState<Country>(defaultCountry);
   const [isDropdownVisible, setIsDropdownVisible] = useState<boolean>(false);
@@ -19,6 +21,7 @@ const CountryDropdownForUI = () => {
   const handleSelectCountry = (country: Country) => {
     setSelectedCountry(country);
     setIsDropdownVisible(false);
+    onChange(country.value); 
   };
 
   const handleClickOutside = (event: MouseEvent) => {

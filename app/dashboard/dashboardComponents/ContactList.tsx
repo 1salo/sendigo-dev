@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import EditContactModal from "./EditContactModal";
 import AddContactModal from "./AddContacModal";
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
 interface Contact {
   id: number;
   companyName: string;
@@ -149,7 +150,7 @@ const ContactList: React.FC = () => {
   };
 
   if (isLoading) {
-    return <span className="loading loading-spinner loading-lg"></span>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -159,7 +160,10 @@ const ContactList: React.FC = () => {
   return (
     <div className="w-10/12">
       <h1 className="mb-4 font-medium">Min adressbok</h1>
-      <button className="btn btn-primary mr-4 hover:bg-gray-900" onClick={handleAddContact}>
+      <button
+        className="btn btn-primary mr-4 hover:bg-gray-900"
+        onClick={handleAddContact}
+      >
         Lägg till kontakt
       </button>
       <button

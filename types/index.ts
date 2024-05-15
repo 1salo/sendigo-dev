@@ -49,6 +49,7 @@ export interface MyUser {
   street: string | null;
   phonenumber: string | null;
   hasCompletedInitialSetup: boolean;
+  hashedPassword: string | null;
 }
 
 // Assuming `token` has the same structure as `MyUser`
@@ -65,4 +66,18 @@ export interface ShipmentDetails {
   description?: string;
   count?: number;
   isStackable?: boolean; // Make it nullable
+}
+
+export interface ShippingData {
+  fromZip: string;
+  toZip: string;
+  fromCountry: string;
+  toCountry: string;
+  weight: string;
+  dimensions: {
+    length: string;
+    width: string;
+    height: string;
+  };
+  stackable: boolean;
 }

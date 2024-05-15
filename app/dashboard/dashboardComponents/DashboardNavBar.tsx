@@ -100,7 +100,6 @@ const DashboardNavBar = () => {
               ? "border-b-black border-b-2 btn btn-ghost flex items-center justify-center text-2xl mr-2"
               : "btn btn-ghost flex items-center justify-center text-2xl mr-2"
           }
-          // className="btn btn-ghost flex items-center justify-center text-2xl mr-2"
         >
           <RiContactsBook3Fill className="shake" />
         </Link>

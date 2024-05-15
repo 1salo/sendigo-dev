@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
 import React, { ChangeEvent, useEffect, useState } from "react";
 
 interface User {
@@ -77,12 +78,11 @@ const MyProfileUser = () => {
   };
 
   if (!user) {
-    return <span className="loading loading-dots loading-lg"></span>;
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="flex flex-col">
-      <h1 className="my-4 font-medium text-3xl">Mina sidor</h1>
       <h1 className="my-4 font-medium">Kontakt</h1>
       <label className="flex flex-col w-72">
         <span>Förnamn</span>

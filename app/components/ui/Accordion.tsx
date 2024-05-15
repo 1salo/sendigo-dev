@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
-import { IoCloseOutline } from "react-icons/io5";
-import { HiOutlinePlus } from "react-icons/hi";
+import { LuPackage } from "react-icons/lu";
+import { LuPackageOpen } from "react-icons/lu";
 
 interface AccordionProps {
   title: string;
@@ -15,24 +15,14 @@ const Accordion: FunctionComponent<AccordionProps> = ({
   isOpen,
   onClick,
 }) => {
-  const [isRotating, setIsRotating] = useState(false);
-  const [closeIconRotating, setCloseIconRotating] = useState(false);
+  const [isBouncing, setIsBouncing] = useState(false);
 
   const handleToggle = () => {
-    if (!isOpen) {
-      setIsRotating(true);
-      setTimeout(() => {
-        onClick(); // Change the state to open after rotation completes
-        setIsRotating(false); // Reset rotation state after it completes
-      }, 700); // This matches the duration of the rotation
-    } else {
-      // Start rotation for closing
-      setCloseIconRotating(true);
-      setTimeout(() => {
-        onClick(); // Close the accordion after the rotation
-        setCloseIconRotating(false); // Reset rotation state
-      }, 700); // Rotation duration for closing
-    }
+    setIsBouncing(true);
+    setTimeout(() => {
+      onClick(); 
+      setIsBouncing(false); 
+    }, 500); 
   };
 
   return (
@@ -43,17 +33,9 @@ const Accordion: FunctionComponent<AccordionProps> = ({
       >
         <span className="font-medium text-2xl">{title}</span>
         {isOpen ? (
-          <IoCloseOutline
-            className={`text-2xl transition-transform duration-1000 ease-in-out ${
-              closeIconRotating ? "rotate-[-45deg]" : ""
-            }`}
-          />
+          <LuPackageOpen className={`text-2xl ${isBouncing ? "bounce" : ""}`} />
         ) : (
-          <HiOutlinePlus
-            className={`text-2xl transition-transform duration-1000 ease-in-out ${
-              isRotating ? "rotate-45" : ""
-            }`}
-          />
+          <LuPackage className={`text-2xl ${isBouncing ? "bounce" : ""}`} />
         )}
       </button>
       <div

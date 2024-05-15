@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   console.log("Extracted token:", token);
 
   // Get the base URL from environment variables or default to localhost for development
-  const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+  const baseUrl = process.env.DOMAIN || "http://localhost:3000";
 
   if (!token) {
     console.error("Token is required");

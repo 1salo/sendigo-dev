@@ -1,12 +1,13 @@
 import React from "react";
 import { useSession } from "next-auth/react";
 import { COUNTRIES } from "@/app/_lib/countries";
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
 
 const MyProfileCompany = () => {
   const { data: session } = useSession();
 
   if (!session) {
-    return <span className="loading loading-dots loading-lg"></span>;
+    return <LoadingSpinner />;
   }
 
   const userCountry = COUNTRIES.find(

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React, { useState } from "react";
+import { ShippingData } from "@/types";
 
 interface PackageOptionProps {
   name: string;
@@ -9,6 +10,11 @@ interface PackageOptionProps {
   count: number;
   onDecrement: () => void;
   onIncrement: () => void;
+}
+
+interface DashboardShippingPackageFormProps {
+  updateShippingData: (data: Partial<ShippingData>) => void;
+  animationClass?: string;
 }
 
 const PackageOption: React.FC<PackageOptionProps> = ({
@@ -42,7 +48,7 @@ const PackageOption: React.FC<PackageOptionProps> = ({
       onClick={onSelect}
       style={{ height: "180px" }}
     >
-      <div className="mb-2 w-16 h-16  flex items-center justify-center">
+      <div className="mb-2 w-16 h-16 flex items-center justify-center">
         {imagePath && (
           <Image src={imagePath} alt={name} width={100} height={100} />
         )}
@@ -72,10 +78,17 @@ const PackageOption: React.FC<PackageOptionProps> = ({
   );
 };
 
-const DashboardShippingPackageForm: React.FC = () => {
-  const [selectedOption, setSelectedOption] = useState<string>("Paket"); // Initialize with "Paket"
-  const [isStackable, setIsStackable] = useState<string | null>(null);
-  const [dimensions, setDimensions] = useState({
+const DashboardShippingPackageForm: React.FC<
+  DashboardShippingPackageFormProps
+> = ({ updateShippingData, animationClass }) => {
+  const [selectedOption, setSelectedOption] = useState<string>("Paket");
+  const [isStackable, setIsStackable] = useState<boolean>(false);
+  const [dimensions, setDimensions] = useState<{
+    weight: string;
+    length: string;
+    width: string;
+    height: string;
+  }>({
     weight: "",
     length: "",
     width: "",
@@ -87,24 +100,40 @@ const DashboardShippingPackageForm: React.FC = () => {
     dimension: keyof typeof dimensions,
     value: string
   ) => {
-    setDimensions((prevDimensions) => ({
-      ...prevDimensions,
-      [dimension]: value,
-    }));
+    const newDimensions = { ...dimensions, [dimension]: value };
+    setDimensions(newDimensions);
+    updatePackageData(newDimensions, isStackable);
   };
 
   const handleOptionSelect = (option: string) => {
     setSelectedOption(option);
     setCount(1);
-    setIsStackable(null);
+    setIsStackable(false);
   };
 
-  const handleDecrement = () => {
-    setCount((prevCount) => (prevCount > 0 ? prevCount - 1 : prevCount));
+  const handleStackableChange = (stackable: boolean) => {
+    setIsStackable(stackable);
+    updatePackageData(dimensions, stackable);
   };
 
-  const handleIncrement = () => {
-    setCount((prevCount) => prevCount + 1);
+  const updatePackageData = (
+    newDimensions: {
+      weight: string;
+      length: string;
+      width: string;
+      height: string;
+    },
+    newStackable: boolean
+  ) => {
+    updateShippingData({
+      weight: newDimensions.weight,
+      dimensions: {
+        length: newDimensions.length,
+        width: newDimensions.width,
+        height: newDimensions.height,
+      },
+      stackable: newStackable,
+    });
   };
 
   let note = "";
@@ -120,10 +149,11 @@ const DashboardShippingPackageForm: React.FC = () => {
   }
 
   return (
-    <div className="card max-w-lg bg-base-100 shadow-xl mx-auto my-4">
+    <div
+      className={`card max-w-lg bg-base-100 shadow-xl mx-auto my-4 ${animationClass}`}
+    >
       <div className="card-body">
         <h2 className="card-title text-lg mb-4">Kolli</h2>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <PackageOption
             name="Paket"
@@ -131,8 +161,8 @@ const DashboardShippingPackageForm: React.FC = () => {
             isSelected={selectedOption === "Paket"}
             onSelect={() => handleOptionSelect("Paket")}
             count={count}
-            onDecrement={handleDecrement}
-            onIncrement={handleIncrement}
+            onDecrement={() => setCount(Math.max(count - 1, 0))}
+            onIncrement={() => setCount(count + 1)}
           />
           <PackageOption
             name="Pall"
@@ -140,8 +170,8 @@ const DashboardShippingPackageForm: React.FC = () => {
             isSelected={selectedOption === "Pall"}
             onSelect={() => handleOptionSelect("Pall")}
             count={count}
-            onDecrement={handleDecrement}
-            onIncrement={handleIncrement}
+            onDecrement={() => setCount(Math.max(count - 1, 0))}
+            onIncrement={() => setCount(count + 1)}
           />
           <PackageOption
             name="Ospecificerat"
@@ -149,8 +179,8 @@ const DashboardShippingPackageForm: React.FC = () => {
             isSelected={selectedOption === "Ospecificerat"}
             onSelect={() => handleOptionSelect("Ospecificerat")}
             count={count}
-            onDecrement={handleDecrement}
-            onIncrement={handleIncrement}
+            onDecrement={() => setCount(Math.max(count - 1, 0))}
+            onIncrement={() => setCount(count + 1)}
           />
         </div>
 
@@ -166,13 +196,7 @@ const DashboardShippingPackageForm: React.FC = () => {
               inputMode="numeric"
               className="input input-bordered w-full pl-4 pr-12"
               value={dimensions.weight}
-              onChange={(e) => {
-                // Ensure only numeric input
-                const value = e.target.value;
-                if (value === "" || /^[0-9\b]+$/.test(value)) {
-                  handleDimensionChange("weight", value);
-                }
-              }}
+              onChange={(e) => handleDimensionChange("weight", e.target.value)}
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <span>kg</span>
@@ -193,14 +217,9 @@ const DashboardShippingPackageForm: React.FC = () => {
                 inputMode="numeric"
                 className="input input-bordered w-full pl-4 pr-12"
                 value={dimensions.length}
-                onChange={(e) => {
-                  if (
-                    e.target.value === "" ||
-                    /^[0-9\b]+$/.test(e.target.value)
-                  ) {
-                    handleDimensionChange("length", e.target.value);
-                  }
-                }}
+                onChange={(e) =>
+                  handleDimensionChange("length", e.target.value)
+                }
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <span>cm</span>
@@ -219,14 +238,7 @@ const DashboardShippingPackageForm: React.FC = () => {
                 inputMode="numeric"
                 className="input input-bordered w-full pl-4 pr-12"
                 value={dimensions.width}
-                onChange={(e) => {
-                  if (
-                    e.target.value === "" ||
-                    /^[0-9\b]+$/.test(e.target.value)
-                  ) {
-                    handleDimensionChange("width", e.target.value);
-                  }
-                }}
+                onChange={(e) => handleDimensionChange("width", e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <span>cm</span>
@@ -245,14 +257,9 @@ const DashboardShippingPackageForm: React.FC = () => {
                 inputMode="numeric"
                 className="input input-bordered w-full pl-4 pr-12"
                 value={dimensions.height}
-                onChange={(e) => {
-                  if (
-                    e.target.value === "" ||
-                    /^[0-9\b]+$/.test(e.target.value)
-                  ) {
-                    handleDimensionChange("height", e.target.value);
-                  }
-                }}
+                onChange={(e) =>
+                  handleDimensionChange("height", e.target.value)
+                }
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <span>cm</span>
@@ -273,9 +280,8 @@ const DashboardShippingPackageForm: React.FC = () => {
                   name="stackable"
                   className="radio checked:bg-black"
                   value="ja"
-                  checked={isStackable === "ja"}
-                  onChange={() => setIsStackable("ja")}
-                  // Checked state should be dynamically set based on state or form library
+                  checked={isStackable}
+                  onChange={() => handleStackableChange(true)}
                 />
                 <span className="ml-2">Ja</span>
               </label>
@@ -285,9 +291,8 @@ const DashboardShippingPackageForm: React.FC = () => {
                   name="stackable"
                   className="radio checked:bg-black"
                   value="nej"
-                  checked={isStackable === "nej"}
-                  onChange={() => setIsStackable("nej")}
-                  // Checked state should be dynamically set based on state or form library
+                  checked={!isStackable}
+                  onChange={() => handleStackableChange(false)}
                 />
                 <span className="ml-2">Nej</span>
               </label>
