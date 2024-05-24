@@ -1,52 +1,45 @@
+"use client";
+
+import React, { useEffect, useState, useRef } from "react";
 import { COUNTRIES } from "@/app/_lib/countries";
 import CountryDropdown from "@/app/components/CountryDropdown";
 import LoadingSkeleton from "@/app/components/ui/LoadingSkeleton";
 import { useSession } from "next-auth/react";
-import React, { useState, useEffect, useRef } from "react";
+import { Contact, Country, Prediction, ShipmentDetails } from "@/types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+import { updateShipmentDetails } from "@/app/store/shipmentDetailsSlice";
 
-interface Prediction {
-  formatted_address: string;
-  place_id: string;
-  postal_code: string;
-  city: string;
-  street: string;
-  country: string; // This should hold the English name as returned by the API
+interface ReceiverCardProps {
+  formSubmitted: boolean;
+  setReceiverComplete: (complete: boolean) => void;
 }
 
-interface Country {
-  title: string; // Swedish title
-  engTitle: string; // English title
-  value: string;
-}
+const ReceiverCard: React.FC<ReceiverCardProps> = ({
+  formSubmitted,
+  setReceiverComplete,
+}) => {
+  const { data: session } = useSession();
+  const dispatch = useDispatch();
+  const details = useSelector((state: RootState) => state.shipmentDetails);
 
-interface Contact {
-  id: number;
-  companyName: string;
-  name: string;
-  street?: string;
-  postalcode?: string;
-  city?: string;
-  country?: string;
-  email?: string;
-  phone?: string;
-}
-
-const ReceiverCard = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
-
-  const [address, setAddress] = useState("");
-  const [postcode, setPostcode] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [city, setCity] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState(details.receiver?.address || "");
+  const [postcode, setPostcode] = useState(details.receiver?.postcode || "");
+  const [companyName, setCompanyName] = useState(
+    details.receiver?.companyName || ""
+  );
+  const [city, setCity] = useState(details.receiver?.city || "");
+  const [contactName, setContactName] = useState(
+    details.receiver?.contactName || ""
+  );
+  const [phoneNumber, setPhoneNumber] = useState(details.receiver?.phone || "");
+  const [email, setEmail] = useState(details.receiver?.email || "");
   const [country, setCountry] = useState<Country>({
     title: "Sverige",
-    engTitle: "Sweden",
+    engTitle: details.receiver?.country || "Sweden",
     value: "SE",
   });
   const [suggestions, setSuggestions] = useState<Prediction[]>([]);
@@ -55,41 +48,133 @@ const ReceiverCard = () => {
   const lastUserInput = useRef("");
   const [saveInAddressBook, setSaveInAddressBook] = useState(false);
 
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddress(e.target.value);
+  const [errors, setErrors] = useState({
+    companyName: false,
+    address: false,
+    postcode: false,
+    city: false,
+    contactName: false,
+    phone: false,
+    email: false,
+    country: false,
+  });
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof ShipmentDetails["receiver"]
+  ) => {
+    const value = e.target.value;
+    const updatedReceiver = { ...details.receiver, [field]: value };
+    dispatch(updateShipmentDetails({ receiver: updatedReceiver }));
+    setErrors((prev) => ({ ...prev, [field]: !value }));
+
+    if (field === "address") setAddress(value);
+    if (field === "postcode") setPostcode(value);
+    if (field === "companyName") setCompanyName(value);
+    if (field === "city") setCity(value);
+    if (field === "contactName") setContactName(value);
+    if (field === "phone") setPhoneNumber(value);
+    if (field === "email") setEmail(value);
   };
 
-  const handlePostcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPostcode(e.target.value);
+  const handleCountryChange = (selectedCountry: Country) => {
+    setCountry(selectedCountry);
+    dispatch(
+      updateShipmentDetails({
+        receiver: {
+          ...details.receiver,
+          country: selectedCountry.engTitle,
+        },
+      })
+    );
   };
 
-  const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCity(e.target.value);
+  const handleSuggestionClick = (suggestion: Prediction) => {
+    setAddress(suggestion.street);
+    setPostcode(suggestion.postal_code);
+    setCity(suggestion.city);
+    const foundCountry = COUNTRIES.find(
+      (c) => c.engTitle === suggestion.country
+    );
+    if (foundCountry) {
+      setCountry(foundCountry);
+    }
+    dispatch(
+      updateShipmentDetails({
+        receiver: {
+          ...details.receiver,
+          address: suggestion.street,
+          postcode: suggestion.postal_code,
+          city: suggestion.city,
+          country: foundCountry ? foundCountry.engTitle : "Sweden",
+        },
+      })
+    );
+    setErrors({
+      companyName: false,
+      address: false,
+      postcode: false,
+      city: false,
+      contactName: false,
+      phone: false,
+      email: false,
+      country: false,
+    });
+    setShowSuggestions(false);
   };
 
-  const handleContactNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setContactName(e.target.value);
+  const handleClearFields = () => {
+    setAddress("");
+    setPostcode("");
+    setCity("");
+    setCountry({
+      title: "Sverige",
+      engTitle: "Sweden",
+      value: "SE",
+    });
+    setContactName("");
+    setPhoneNumber("");
+    setCompanyName("");
+    setEmail("");
+    setErrors({
+      companyName: true,
+      address: true,
+      postcode: true,
+      city: true,
+      contactName: true,
+      phone: true,
+      email: true,
+      country: true,
+    });
+    setReceiverComplete(false);
+    dispatch(
+      updateShipmentDetails({
+        receiver: {
+          companyName: "",
+          contactName: "",
+          address: "",
+          postcode: "",
+          city: "",
+          country: "Sweden",
+          email: "",
+          phone: "",
+        },
+      })
+    );
   };
 
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhoneNumber(e.target.value);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handleCompanyNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCompanyName(e.target.value);
-  };
-
-  const handleSaveInAddressBookChange = async (
+  const handleSaveInAddressBookChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setSaveInAddressBook(e.target.checked);
     if (e.target.checked) {
-      await saveContact();
+      saveContact();
     }
+  };
+
+  const handleToggle = () => {
+    setIsPrivatePerson((prev) => !prev);
+    validateFields();
   };
 
   const saveContact = async () => {
@@ -125,38 +210,26 @@ const ReceiverCard = () => {
     }
   };
 
-  const handleSuggestionClick = (suggestion: Prediction) => {
-    setAddress(suggestion.street);
-    setPostcode(suggestion.postal_code);
-    setCity(suggestion.city);
-    lastUserInput.current = suggestion.street;
+  useEffect(() => {
+    validateFields();
+  }, [address, companyName, postcode, city, contactName, phoneNumber, email]);
 
-    const foundCountry = COUNTRIES.find(
-      (c) => c.engTitle === suggestion.country
-    );
-    if (foundCountry) {
-      setCountry(foundCountry);
-    }
-    setShowSuggestions(false);
-  };
+  const validateFields = () => {
+    const newErrors = {
+      companyName: !companyName,
+      address: !address,
+      postcode: !postcode,
+      city: !city,
+      contactName: !contactName,
+      phone: !phoneNumber,
+      email: !email,
+      country: !country,
+    };
 
-  const handleToggle = () => {
-    setIsPrivatePerson((prev) => !prev); // Toggle the state
-  };
+    setErrors(newErrors);
 
-  const handleClearFields = () => {
-    setAddress("");
-    setPostcode("");
-    setCity("");
-    setCountry({
-      title: "Sverige",
-      engTitle: "Sweden",
-      value: "SE",
-    });
-    setContactName("");
-    setPhoneNumber("");
-    setCompanyName("");
-    setEmail("");
+    const allFieldsValid = Object.values(newErrors).every((error) => !error);
+    setReceiverComplete(allFieldsValid);
   };
 
   useEffect(() => {
@@ -222,6 +295,30 @@ const ReceiverCard = () => {
       setEmail(contact.email || "");
       setPhoneNumber(contact.phone || "");
       setContactCountry(contact.country);
+      dispatch(
+        updateShipmentDetails({
+          receiver: {
+            companyName: contact.companyName,
+            contactName: contact.name,
+            address: contact.street || "",
+            postcode: contact.postalcode || "",
+            city: contact.city || "",
+            email: contact.email || "",
+            phone: contact.phone || "",
+            country: contact.country || "",
+          },
+        })
+      );
+      setErrors({
+        companyName: false,
+        address: false,
+        postcode: false,
+        city: false,
+        contactName: false,
+        phone: false,
+        email: false,
+        country: false,
+      });
     } else {
       handleClearFields();
     }
@@ -240,7 +337,12 @@ const ReceiverCard = () => {
     }
   };
 
+  useEffect(() => {
+    validateFields();
+  }, []);
+
   if (isLoading) return <LoadingSkeleton />;
+
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -274,9 +376,9 @@ const ReceiverCard = () => {
             </select>
           </div>
 
-          <div className="form-control mt-4">
+          <div className="form-control my-4">
             <label className="label cursor-pointer">
-              <span className="label-text font-sans">
+              <span className="label-text font-medium">
                 Skicka till privatperson
               </span>
               <input
@@ -294,10 +396,19 @@ const ReceiverCard = () => {
               </span>
               <input
                 type="text"
-                className="input input-bordered w-full"
+                className={`input input-bordered w-full ${
+                  formSubmitted && errors.companyName ? "border-red-500" : ""
+                }`}
                 value={companyName}
-                onChange={handleCompanyNameChange}
+                required
+                onChange={(e) => {
+                  setCompanyName(e.target.value);
+                  handleInputChange(e, "companyName");
+                }}
               />
+              {formSubmitted && errors.companyName && (
+                <p className="text-red-500">Fältet är obligatoriskt</p>
+              )}
             </div>
 
             {isPrivatePerson ? (
@@ -315,12 +426,20 @@ const ReceiverCard = () => {
               <span className="label-text">Adress (Ej boxadress)</span>
               <input
                 type="text"
-                className="input input-bordered w-full"
+                className={`input input-bordered w-full ${
+                  formSubmitted && errors.address ? "border-red-500" : ""
+                }`}
                 required
                 value={address}
-                onChange={handleAddressChange}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                  handleInputChange(e, "address");
+                }}
                 onFocus={() => setShowSuggestions(true)}
               />
+              {formSubmitted && errors.address && (
+                <p className="text-red-500">Fältet är obligatoriskt</p>
+              )}
               {showSuggestions && suggestions.length > 0 && (
                 <div className="bg-white border rounded shadow-lg w-full absolute z-10 top-full mt-1 receiver-suggestion-dropdown max-h-60 overflow-y-auto">
                   {suggestions.map((suggestion) => (
@@ -341,59 +460,104 @@ const ReceiverCard = () => {
                 <span className="label-text">Postnummer</span>
                 <input
                   type="text"
-                  className="input input-bordered w-32 mr-3 max-w-xs"
+                  className={`input input-bordered w-32 mr-3 max-w-xs ${
+                    formSubmitted && errors.postcode ? "border-red-500" : ""
+                  }`}
                   value={postcode}
-                  onChange={handlePostcodeChange}
+                  required
+                  onChange={(e) => {
+                    setPostcode(e.target.value);
+                    handleInputChange(e, "postcode");
+                  }}
                 />
+                {formSubmitted && errors.postcode && (
+                  <p className="text-red-500">Fältet är obligatoriskt</p>
+                )}
               </div>
 
               <div className="flex flex-col mb-4 md:mb-0">
                 <span className="label-text">Stad</span>
                 <input
                   type="text"
-                  className="input input-bordered min-w-64"
+                  className={`input input-bordered min-w-64 ${
+                    formSubmitted && errors.city ? "border-red-500" : ""
+                  }`}
                   value={city}
-                  onChange={handleCityChange}
+                  required
+                  onChange={(e) => {
+                    setCity(e.target.value);
+                    handleInputChange(e, "city");
+                  }}
                 />
+                {formSubmitted && errors.city && (
+                  <p className="text-red-500">Fältet är obligatoriskt</p>
+                )}
               </div>
             </div>
             <div className="flex flex-col mb-4 md:mb-0">
               <span className="label-text">Land</span>
               <CountryDropdown
                 selectedCountry={country}
-                onSelectCountry={setCountry}
+                onSelectCountry={handleCountryChange}
               />
+              {formSubmitted && errors.country && (
+                <p className="text-red-500">Fältet är obligatoriskt</p>
+              )}
             </div>
           </div>
 
           {isPrivatePerson ? (
             <div className="border-2 rounded py-4 px-4 border-gray-200">
               <div className="flex flex-col mb-4">
-                <span className="label-text">Kontaknamn</span>
+                <span className="label-text">Kontaktnamn</span>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className={`input input-bordered w-full ${
+                    formSubmitted && errors.contactName ? "border-red-500" : ""
+                  }`}
                   value={contactName}
-                  onChange={handleContactNameChange}
+                  required
+                  onChange={(e) => {
+                    setContactName(e.target.value);
+                    handleInputChange(e, "contactName");
+                  }}
                 />
+                {formSubmitted && errors.contactName && (
+                  <p className="text-red-500">Fältet är obligatoriskt</p>
+                )}
               </div>
               <div className="flex flex-col mb-4">
                 <span className="label-text">Telefon</span>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className={`input input-bordered w-full ${
+                    formSubmitted && errors.phone ? "border-red-500" : ""
+                  }`}
                   value={phoneNumber}
-                  onChange={handlePhoneNumberChange}
+                  required
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value);
+                    handleInputChange(e, "phone");
+                  }}
                 />
+                {formSubmitted && errors.phone && (
+                  <p className="text-red-500">Fältet är obligatoriskt</p>
+                )}
               </div>
               <div className="flex flex-col mb-4">
                 <span className="label-text">E-postadress</span>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className={`input input-bordered w-full ${
+                    formSubmitted && errors.email ? "border-red-500" : ""
+                  }`}
                   value={email}
-                  onChange={handleEmailChange}
+                  required
+                  onChange={(e) => handleInputChange(e, "email")}
                 />
+                {formSubmitted && errors.email && (
+                  <p className="text-red-500">Fältet är obligatoriskt</p>
+                )}
               </div>
             </div>
           ) : (
@@ -402,19 +566,31 @@ const ReceiverCard = () => {
                 <span className="label-text">Telefon</span>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className={`input input-bordered w-full ${
+                    formSubmitted && errors.phone ? "border-red-500" : ""
+                  }`}
                   value={phoneNumber}
-                  onChange={handlePhoneNumberChange}
+                  required
+                  onChange={(e) => handleInputChange(e, "phone")}
                 />
+                {formSubmitted && errors.phone && (
+                  <p className="text-red-500">Fältet är obligatoriskt</p>
+                )}
               </div>
               <div className="flex flex-col mb-4">
                 <span className="label-text">E-postadress</span>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className={`input input-bordered w-full ${
+                    formSubmitted && errors.email ? "border-red-500" : ""
+                  }`}
                   value={email}
-                  onChange={handleEmailChange}
+                  required
+                  onChange={(e) => handleInputChange(e, "email")}
                 />
+                {formSubmitted && errors.email && (
+                  <p className="text-red-500">Fältet är obligatoriskt</p>
+                )}
               </div>
             </div>
           )}

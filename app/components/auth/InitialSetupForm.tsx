@@ -1,6 +1,7 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import CountryDropdown from "../CountryDropdown";
 
 interface FormValues {
   firstName: string;
@@ -15,7 +16,7 @@ interface FormValues {
 interface InitialSetupFormProps {
   onSubmit: SubmitHandler<FormValues>;
   isLoading: boolean;
-  onClose: () => void; // Function to close the form
+  onClose: () => void;
 }
 
 const InitialSetupForm: React.FC<InitialSetupFormProps> = ({
@@ -27,7 +28,35 @@ const InitialSetupForm: React.FC<InitialSetupFormProps> = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>();
+    setValue,
+  } = useForm<FormValues>({
+    defaultValues: {
+      country: "SE", // Set default country to Sweden
+    },
+  });
+
+  const [selectedCountry, setSelectedCountry] = React.useState({
+    title: "Sverige",
+    engTitle: "Sweden",
+    value: "SE",
+  });
+
+  const handleSelectCountry = (country: {
+    title: string;
+    engTitle: string;
+    value: string;
+  }) => {
+    setSelectedCountry(country);
+    setValue("country", country.value); // Update form value when a country is selected
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 flex justify-center items-center">
@@ -94,30 +123,28 @@ const InitialSetupForm: React.FC<InitialSetupFormProps> = ({
               />
               {errors.postalCode && <p>{errors.postalCode.message}</p>}
             </div>
-            <div className="flex flex-col mt-3">
+            <div className="flex flex-col mt-3 max-w-96">
               <label>Land</label>
-              <input
-                className="input input-bordered focus:outline-none mt-2 max-w-96"
-                {...register("country", {
-                  required: "Du måste ange ett land.",
-                })}
+              <CountryDropdown
+                selectedCountry={selectedCountry}
+                onSelectCountry={handleSelectCountry}
               />
               {errors.country && <p>{errors.country.message}</p>}
             </div>
             <div className="flex justify-between mt-20 gap-28 pb-4">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="btn btn-outline w-96"
-              >
-                Spara
-              </button>
               <button
                 type="button"
                 onClick={onClose}
                 className="btn text-red-500 bg-white border-red-500 hover:bg-red-200 w-96"
               >
                 Stäng
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="btn btn-outline w-96"
+              >
+                Spara
               </button>
             </div>
           </form>

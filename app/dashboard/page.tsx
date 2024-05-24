@@ -62,6 +62,10 @@ const DashboardPage = () => {
     }
   };
 
+  const handleCloseSetupForm = () => {
+    setShowSetupForm(false);
+  };
+
   const [shippingData, setShippingData] = useState<ShippingData>({
     fromZip: "",
     toZip: "",
@@ -121,7 +125,7 @@ const DashboardPage = () => {
           <InitialSetupForm
             onSubmit={handleInitialSetupSubmit}
             isLoading={isLoading}
-            onClose={() => setShowSetupForm(false)}
+            onClose={handleCloseSetupForm}
           />
         </div>
       )}

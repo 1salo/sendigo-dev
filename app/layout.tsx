@@ -1,9 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import NavBar from "./NavBar";
 import AuthProvider from "./auth/Provider";
-
+import LayoutSwitcher from "./components/LayoutSwitcher";
+import ClientProviders from "./components/ClientProviders";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +23,9 @@ export default function RootLayout({
         className={`${inter.className} flex flex-col min-h-screen bg-slate-50`}
       >
         <AuthProvider>
-          <main className="flex flex-col flex-1">{children}</main>
+          <ClientProviders>
+            <LayoutSwitcher>{children}</LayoutSwitcher>
+          </ClientProviders>
         </AuthProvider>
       </body>
     </html>

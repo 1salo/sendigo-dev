@@ -33,7 +33,7 @@ export interface CurrentUserProps {
   } | null;
 }
 
-// New MyUser interface
+// MyUser interface
 export interface MyUser {
   id: string;
   companyName: string | null;
@@ -52,20 +52,57 @@ export interface MyUser {
   hashedPassword: string | null;
 }
 
-// Assuming `token` has the same structure as `MyUser`
 export type MyToken = MyUser;
 
+interface AddressDetails {
+  companyName: string;
+  contactName: string;
+  address: string;
+  postcode: string;
+  city: string;
+  country: string;
+  email: string;
+  phone: string;
+}
+
 export interface ShipmentDetails {
-  packageType?: string;
-  dimensions?: {
-    weight: string;
-    length: string;
-    width: string;
-    height: string;
+  sender: AddressDetails;
+  receiver: AddressDetails;
+  packageDetails: {
+    weight: number; // Ensure weight is not optional
+    dimensions: {
+      length: number;
+      width: number;
+      height: number;
+    };
+    content: string;
+    isStackable: boolean;
   };
-  description?: string;
-  count?: number;
-  isStackable?: boolean; // Make it nullable
+  date: string; // Ensure date is a string
+  description: string;
+  count: number;
+  packageType: string;
+}
+
+export interface PackageDetails {
+  weight: number;
+  dimensions: {
+    length: number;
+    width: number;
+    height: number;
+  };
+  content: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  date: string;
+  sender: AddressDetails;
+  receiver: AddressDetails;
+  packageDetails: PackageDetails;
 }
 
 export interface ShippingData {
@@ -80,4 +117,31 @@ export interface ShippingData {
     height: string;
   };
   stackable: boolean;
+}
+
+export interface Contact {
+  id: number;
+  companyName: string;
+  name: string;
+  street?: string;
+  postalcode?: string;
+  city?: string;
+  country?: string;
+  email?: string;
+  phone?: string;
+}
+
+export interface Country {
+  title: string;
+  engTitle: string;
+  value: string;
+}
+
+export interface Prediction {
+  formatted_address: string;
+  place_id: string;
+  postal_code: string;
+  city: string;
+  street: string;
+  country: string;
 }

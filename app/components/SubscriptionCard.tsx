@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoMdCheckmarkCircle } from "react-icons/io";
+import StripeCheckoutForm from "../dashboard/dashboardComponents/StripeCheckoutForm";
 
 interface Plan {
   name: string;
@@ -52,6 +53,18 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   currentPlan,
   onUpgrade,
 }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
+
+  const handleUpgrade = (planId: number) => {
+    setSelectedPlanId(planId);
+    if (planId === 2) {
+      setIsModalVisible(true);
+    } else {
+      onUpgrade(planId);
+    }
+  };
+
   return (
     <div className="flex space-x-4 justify-center">
       {plans.map((plan) => (
@@ -90,7 +103,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 </button>
               ) : (
                 <button
-                  onClick={() => onUpgrade(plan.id)}
+                  onClick={() => handleUpgrade(plan.id)}
                   className="btn btn-outline"
                   disabled={currentPlan === plan.name}
                 >
@@ -105,6 +118,13 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           </div>
         </div>
       ))}
+      {selectedPlanId !== null && (
+        <StripeCheckoutForm
+          isVisible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          planId={selectedPlanId}
+        />
+      )}
     </div>
   );
 };

@@ -1,30 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { ShipmentDetails } from "@/types"; // Ensure this is correctly imported
+import { ShipmentDetails } from "@/types";
 
 interface SummaryCardProps {
   details: ShipmentDetails;
-  updateShipmentDetails?: (details: ShipmentDetails) => void;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({
-  details,
-  updateShipmentDetails,
-}) => {
-  const handleUpdateDetails = (updatedDetails: ShipmentDetails) => {
-    if (updateShipmentDetails) {
-      updateShipmentDetails(updatedDetails);
-    }
-  };
+const SummaryCard: React.FC<SummaryCardProps> = ({ details }) => {
+  const [isMounted, setIsMounted] = useState(false);
 
-  const renderStackableStatus = () => {
-    if (
-      details.packageType === "Pall" ||
-      details.packageType === "Ospecificerat"
-    ) {
-      return details.isStackable ? "Stapelbart" : "Inte stapelbart";
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
+  const renderDimensions = () => {
+    if (details.packageDetails && details.packageDetails.dimensions) {
+      const { dimensions } = details.packageDetails;
+      if (dimensions.length && dimensions.width && dimensions.height) {
+        return `${dimensions.length} x ${dimensions.width} x ${dimensions.height} cm, `;
+      }
     }
     return "";
+  };
+
+  const calculateVolume = () => {
+    if (details.packageDetails && details.packageDetails.dimensions) {
+      const { dimensions } = details.packageDetails;
+      if (dimensions.length && dimensions.width && dimensions.height) {
+        const length = dimensions.length;
+        const width = dimensions.width;
+        const height = dimensions.height;
+        const volumeCm3 = length * width * height;
+        const volumeM3 = volumeCm3 / 1000000;
+        const decimalPlaces = volumeM3 > 0.9 ? 1 : 2;
+        const roundedVolume =
+          Math.round(volumeM3 * Math.pow(10, decimalPlaces)) /
+          Math.pow(10, decimalPlaces);
+        return `${roundedVolume.toFixed(decimalPlaces)} m³`;
+      }
+    }
+    return "0 m³";
   };
 
   const renderPackageTypeImage = () => {
@@ -36,51 +55,26 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
       case "Ospecificerat":
         return "/images/question.png";
       default:
-        return "";
+        return "/images/default.png";
     }
   };
 
-  const renderDimensions = () => {
-    const { dimensions } = details;
+  const renderStackableStatus = () => {
     if (
-      dimensions &&
-      dimensions.length &&
-      dimensions.width &&
-      dimensions.height
+      details.packageType === "Pall" ||
+      details.packageType === "Ospecificerat"
     ) {
-      return `${dimensions.length} x ${dimensions.width} x ${dimensions.height} cm, `;
+      return details.packageDetails.isStackable
+        ? "Stapelbart"
+        : "Icke stapelbart";
     }
     return "";
   };
 
-  const calculateVolume = () => {
-    const { dimensions } = details;
-    if (
-      dimensions &&
-      dimensions.length &&
-      dimensions.width &&
-      dimensions.height
-    ) {
-      const length = parseFloat(dimensions.length);
-      const width = parseFloat(dimensions.width);
-      const height = parseFloat(dimensions.height);
-      if (!isNaN(length) && !isNaN(width) && !isNaN(height)) {
-        const volumeCm3 = length * width * height; // Volume in cubic cm
-        const volumeM3 = volumeCm3 / 1000000; // Convert to cubic meters
-        const decimalPlaces = volumeM3 > 0.9 ? 1 : 2;
-        const roundedVolume =
-          Math.round(volumeM3 * Math.pow(10, decimalPlaces)) /
-          Math.pow(10, decimalPlaces);
-        return `${roundedVolume.toFixed(decimalPlaces)} m³`;
-      }
-    }
-    return "m³";
-  };
-
   return (
-    <div className="card w-72 bg-white mx-auto items-center h-80 flex flex-col justify-between shadow-lg">
+    <div className="card w-72 bg-white mx-auto h-80 flex flex-col justify-between shadow-lg">
       <div className="card-body">
-        <div className="flex flex-row justify-between items-center mb-4">
+        <div className="flex flex-row justify-between mb-4">
           <h2 className="card-title font-normal">Sammanfattning</h2>
         </div>
         <div className="flex mb-4">
@@ -93,12 +87,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           />
           <div>
             <div className="font-medium">Kolli</div>
-            <div>{details.packageType}</div>
             <div className="text-gray-600 text-sm">
               {renderDimensions()}
-              {details.dimensions?.weight
-                ? `${details.dimensions.weight} kg`
-                : ""}
+              {details.packageDetails?.weight
+                ? `${details.packageDetails.weight} kg`
+                : "0 kg"}
               <div className="font-sm">{details.description}</div>
               <div>{renderStackableStatus()}</div>
             </div>
@@ -111,8 +104,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         </div>
         <div className="text-center">
           <div className="font-sm">
-            {details.dimensions?.weight
-              ? `${details.dimensions.weight} kg`
+            {details.packageDetails?.weight
+              ? `${details.packageDetails.weight} kg`
               : "0 kg"}
           </div>
         </div>

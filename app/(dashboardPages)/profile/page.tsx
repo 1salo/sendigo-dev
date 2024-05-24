@@ -1,11 +1,11 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import SubscriptionCard from "@/app/components/SubscriptionCard";
 import DashboardNavBar from "@/app/dashboard/dashboardComponents/DashboardNavBar";
 import EditPassword from "@/app/dashboard/dashboardComponents/EditPassword";
 import MyProfileCompany from "@/app/dashboard/dashboardComponents/MyProfileCompany";
 import MyProfileUser from "@/app/dashboard/dashboardComponents/MyProfileUser";
-import React, { useState, useEffect } from "react";
 
 const ProfilePage = () => {
   const [subscriptionPlan, setSubscriptionPlan] = useState<string>("Free");
@@ -15,7 +15,6 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchSubscriptionPlan();
-    // Show tooltip initially and hide it after 20 seconds
     setShowTooltip(true);
     const timer = setTimeout(() => {
       setShowTooltip(false);
